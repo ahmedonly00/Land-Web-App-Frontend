@@ -158,7 +158,7 @@ const Contact = () => {
                     <div>
                       <h4 className="font-medium mb-1">Phone</h4>
                       <p className="text-gray-600 text-sm">
-                        {settings.company_phone || '+250788000000'}
+                        {settings.company_phone || '+250780314239'}
                       </p>
                     </div>
                   </div>
@@ -170,7 +170,7 @@ const Contact = () => {
                     <div>
                       <h4 className="font-medium mb-1">Email</h4>
                       <p className="text-gray-600 text-sm">
-                        {settings.company_email || 'info@iwacu250.com'}
+                        {settings.company_email || 'karimkanakuze2050@gmail.com'}
                       </p>
                     </div>
                   </div>

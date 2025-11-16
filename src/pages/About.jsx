@@ -12,7 +12,7 @@ const About = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">About iwacu 250</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">About Iwacu 250</h1>
             <p className="text-xl text-primary-100 max-w-3xl mx-auto">
               Your trusted partner in finding the perfect land plot in Rwanda
             </p>
@@ -26,7 +26,7 @@ const About = () => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
               <div className="prose prose-lg max-w-none text-gray-700">
                 <p className="mb-4">
-                  iwacu 250 was founded with a simple mission: to make land ownership accessible and transparent 
+                  Iwacu 250 was founded with a simple mission: to make land ownership accessible and transparent 
                   for everyone in Rwanda. We understand that finding the right plot of land is one of the most 
                   important decisions you'll make, whether for building your dream home, starting a business, 
                   or investing in your future.
@@ -217,7 +217,7 @@ const About = () => {
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/plots" className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Browse Plots
+                Browse Land | House
               </Link>
               <Link to="/contact" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition">
                 Contact Us

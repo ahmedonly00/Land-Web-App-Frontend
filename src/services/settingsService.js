@@ -4,6 +4,6 @@ export const settingsService = {
   getPublicSettings: () => api.get('/settings/public'),
   
   // Admin endpoints
-  getAllSettings: () => api.get('/admin/settings'),
-  updateSettings: (settings) => api.put('/admin/settings', settings),
+  getAllSettings: () => api.get('/admin/settings/getAllSettings'),
+  updateSettings: (settings) => api.put('/admin/settings/updateSettings', settings),
 };

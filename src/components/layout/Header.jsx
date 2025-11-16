@@ -28,7 +28,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex flex-col">
             <div className="text-2xl font-bold text-primary-600">
-              iwacu 250
+              Iwacu 250
             </div>
             <div className="text-xs text-gray-600">Multipurpose 250</div>
           </Link>
@@ -38,8 +38,8 @@ const Header = () => {
             <Link to="/" className="text-gray-700 hover:text-primary-600 transition font-medium">
               Home
             </Link>
-            <Link to="/plots" className="text-gray-700 hover:text-primary-600 transition font-medium">
-              Plots
+            <Link to="/properties" className="text-gray-700 hover:text-primary-600 transition font-medium">
+              Land | House
             </Link>
             <Link to="/about" className="text-gray-700 hover:text-primary-600 transition font-medium">
               About
@@ -73,11 +73,11 @@ const Header = () => {
               Home
             </Link>
             <Link 
-              to="/plots" 
+              to="/properties" 
               className="block py-2 text-gray-700 hover:text-primary-600"
               onClick={() => setIsOpen(false)}
             >
-              Plots
+              Land | House
             </Link>
             <Link 
               to="/about" 

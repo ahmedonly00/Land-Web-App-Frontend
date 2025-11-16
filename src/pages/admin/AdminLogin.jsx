@@ -11,15 +11,28 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     setLoading(true);
     try {
-      await login(data);
+      console.log('🔐 Login form data:', formData);
+      
+      await login({ 
+        username: formData.username,
+        password: formData.password 
+      });
+      
       toast.success('Login successful!');
       navigate('/admin');
+      
     } catch (error) {
-      console.error('Login failed', error);
-      toast.error(error.response?.data?.message || 'Invalid username or password');
+      console.error('❌ Login failed:', error);
+      
+      // Better error handling
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || 'Invalid username or password';
+        
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -99,7 +112,7 @@ const AdminLogin = () => {
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>Default credentials:</p>
             <p className="font-mono bg-gray-100 px-3 py-2 rounded mt-2">
-              admin / Admin@123
+              admin / admin123
             </p>
             <p className="text-xs text-red-600 mt-2">
               ⚠️ Change password after first login

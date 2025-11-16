@@ -8,8 +8,10 @@ import { toast } from 'react-toastify';
 const AdminPlotForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const isEdit = !!id;
+  const isEdit = Boolean(id);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [plot, setPlot] = useState(null);
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   useEffect(() => {
@@ -20,20 +22,19 @@ const AdminPlotForm = () => {
 
   const loadPlot = async () => {
     try {
-      const response = await plotService.getPlotById(id);
-      const plot = response.data;
+      const plotData = await plotService.adminGetPlotById(id);
+      console.log('Plot data loaded:', plotData);
+      setPlot(plotData);
       reset({
-        title: plot.title,
-        location: plot.location,
-        size: plot.size,
-        sizeUnit: plot.sizeUnit,
-        price: plot.price,
-        currency: plot.currency,
-        description: plot.description,
-        status: plot.status,
-        videoUrl: plot.videoUrl,
-        latitude: plot.latitude,
-        longitude: plot.longitude,
+        title: plotData.title,
+        location: plotData.location,
+        size: plotData.size,
+        sizeUnit: plotData.sizeUnit,
+        price: plotData.price,
+        currency: plotData.currency,
+        description: plotData.description,
+        status: plotData.status,
+        videoUrl: plotData.videoUrl,
       });
     } catch (error) {
       console.error('Failed to load plot', error);
@@ -44,9 +45,24 @@ const AdminPlotForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      console.log('Plot data being sent:', data);
+      
       if (isEdit) {
         await plotService.updatePlot(id, data);
         toast.success('Plot updated successfully');
+        
+        // Upload image if one was selected (optional)
+        if (imageFile) {
+          try {
+            const formData = new FormData();
+            formData.append('file', imageFile);
+            await plotService.uploadImage(id, formData);
+            toast.success('Image uploaded successfully');
+          } catch (imageError) {
+            console.warn('Image upload failed, but plot was updated:', imageError);
+            toast.warning('Plot updated, but image upload failed');
+          }
+        }
       } else {
         await plotService.createPlot(data);
         toast.success('Plot created successfully');
@@ -57,6 +73,12 @@ const AdminPlotForm = () => {
       toast.error('Failed to save plot');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
     }
   };
 
@@ -188,44 +210,47 @@ const AdminPlotForm = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Latitude (Optional)
-                </label>
-                <input
-                  type="number"
-                  step="0.000001"
-                  {...register('latitude')}
-                  className="input-field"
-                  placeholder="-1.9706"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Longitude (Optional)
-                </label>
-                <input
-                  type="number"
-                  step="0.000001"
-                  {...register('longitude')}
-                  className="input-field"
-                  placeholder="30.1044"
-                />
-              </div>
+              {isEdit && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Image (Optional)
+                  </label>
+                  {plot?.imageUrl && (
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 mb-2">Current image:</p>
+                      <img
+                        src={`http://localhost:8080/uploads/${plot.imageUrl}`}
+                        alt="Current plot image"
+                        className="h-32 w-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    className="input-field"
+                  />
+                  {imageFile && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      Selected: {imageFile.name}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                {...register('description')}
-                rows="6"
-                className="input-field resize-none"
-                placeholder="Detailed description of the plot..."
-              ></textarea>
-            </div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  {...register('description')}
+                  rows="6"
+                  className="input-field resize-none"
+                  placeholder="Detailed description of the plot..."
+                ></textarea>
+              </div>
 
             <div className="flex gap-4">
               <button

@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, SlidersHorizontal, MapPin, Landmark } from 'lucide-react';
 import { plotService } from '../services/plotService';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import PlotCard from '../components/plot/PlotCard';
 import Loading from '../components/common/Loading';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
 import { toast } from 'react-toastify';
 
 const PlotsList = () => {
+  const navigate = useNavigate();
+  
   const [plots, setPlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -33,6 +38,7 @@ const PlotsList = () => {
       const params = {
         page,
         size: 12,
+        type: 'land', // Always filter for land plots
         sortBy: filters.sortBy,
         sortDir: filters.sortDir,
         ...(filters.location && { location: filters.location }),
@@ -43,11 +49,32 @@ const PlotsList = () => {
       };
 
       const response = await plotService.getAllPlots(params);
-      setPlots(response.data.content);
-      setTotalPages(response.data.totalPages);
+      
+      if (response && Array.isArray(response.content)) {
+        setPlots(response.content);
+        setTotalPages(response.totalPages || 1);
+      } else if (response && response.data && Array.isArray(response.data.content)) {
+        setPlots(response.data.content);
+        setTotalPages(response.data.totalPages || 1);
+      } else if (Array.isArray(response)) {
+        setPlots(response);
+        setTotalPages(1);
+      } else {
+        console.error('Unexpected response format:', response);
+        setPlots([]);
+        setTotalPages(0);
+        toast.error('Unexpected response format from server');
+      }
     } catch (error) {
       console.error('Failed to load plots', error);
-      toast.error('Failed to load plots');
+      // Check if it's a 404 (not found) error
+      if (error.response && error.response.status === 404) {
+        setPlots([]);
+        setTotalPages(0);
+        toast.info('No plots found. Add some plots to get started!');
+      } else {
+        toast.error('Failed to load plots. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +87,8 @@ const PlotsList = () => {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
+    setPage(0);
     loadPlots();
   };
 
@@ -85,54 +113,40 @@ const PlotsList = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Land Plots</h1>
-            <p className="text-gray-600">Find your perfect plot from our available listings</p>
-          </div>
-
-          {/* Search and Filters */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-              {/* Search */}
-              <div className="flex-grow">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
-                    name="location"
-                    placeholder="Search by location..."
-                    value={filters.location}
-                    onChange={handleFilterChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  />
-                </div>
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="text-base px-4 py-2">
+                <Landmark className="mr-2" size={18} />
+                Land Plots
+              </Badge>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  name="location"
+                  value={filters.location}
+                  onChange={handleFilterChange}
+                  placeholder="Search plots by location..."
+                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
               </div>
-
-              {/* Sort */}
-              <select
-                name="sortBy"
-                value={filters.sortBy}
-                onChange={handleFilterChange}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              >
-                <option value="createdAt">Newest First</option>
-                <option value="price">Price: Low to High</option>
-                <option value="size">Size: Small to Large</option>
-              </select>
-
-              {/* Toggle Filters */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="btn-secondary flex items-center gap-2"
-              >
-                <SlidersHorizontal size={20} />
-                Filters
-              </button>
+                
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <SlidersHorizontal size={18} />
+                  <span>Filters</span>
+                </button>
+              </div>
             </div>
 
-            {/* Advanced Filters */}
             {showFilters && (
-              <div className="border-t pt-4 mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Min Price (RWF)</label>
                     <input
@@ -190,20 +204,20 @@ const PlotsList = () => {
             )}
           </div>
 
-          {/* Results */}
+          {/* Plots Grid */}
           {loading ? (
-            <Loading />
+            <div className="flex justify-center items-center h-64">
+              <Loading />
+            </div>
           ) : plots.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {plots.map((plot) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                {plots.map(plot => (
                   <PlotCard key={plot.id} plot={plot} />
                 ))}
               </div>
-
-              {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center items-center mt-8 space-x-4">
                   <button
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={page === 0}
@@ -225,11 +239,24 @@ const PlotsList = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-12 bg-white rounded-lg">
-              <p className="text-gray-600 mb-4">No plots found matching your criteria</p>
-              <button onClick={clearFilters} className="btn-primary">
-                Clear Filters
-              </button>
+            <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
+              <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Landmark size={40} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">No Plots Found</h3>
+              <p className="text-gray-500 mb-6">
+                {filters.location || filters.minPrice || filters.maxPrice || filters.minSize || filters.maxSize
+                  ? 'No plots match your current filters. Try adjusting your search criteria.'
+                  : 'There are no plots available at the moment. Please check back later or contact us for more information.'}
+              </p>
+              {(filters.location || filters.minPrice || filters.maxPrice || filters.minSize || filters.maxSize) && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           )}
         </div>

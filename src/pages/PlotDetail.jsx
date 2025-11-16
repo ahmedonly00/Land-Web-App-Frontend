@@ -25,8 +25,8 @@ const PlotDetail = () => {
 
   const loadPlot = async () => {
     try {
-      const response = await plotService.getPlotById(id);
-      setPlot(response.data);
+      const plotData = await plotService.getPlotById(id);
+      setPlot(plotData);
     } catch (error) {
       console.error('Failed to load plot', error);
       toast.error('Failed to load plot details');
@@ -37,8 +37,8 @@ const PlotDetail = () => {
 
   const loadSettings = async () => {
     try {
-      const response = await settingsService.getPublicSettings();
-      setSettings(response.data);
+      const settingsData = await settingsService.getPublicSettings();
+      setSettings(settingsData);
     } catch (error) {
       console.error('Failed to load settings', error);
     }
@@ -62,7 +62,7 @@ const PlotDetail = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Plot Not Found</h2>
             <Link to="/plots" className="btn-primary">
-              Browse All Plots
+              Back to Plots
             </Link>
           </div>
         </div>
@@ -70,6 +70,9 @@ const PlotDetail = () => {
       </div>
     );
   }
+
+  const whatsappMessage = getPlotWhatsAppMessage(plot);
+  const whatsappNumber = settings?.whatsappNumber || '+250788123456';
 
   const images = plot.images && plot.images.length > 0 
     ? plot.images 
@@ -176,33 +179,52 @@ const PlotDetail = () => {
 
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              {/* Contact Card */}
-              <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-                <h3 className="text-xl font-semibold mb-4">Interested in this plot?</h3>
-                <p className="text-gray-600 mb-6">
-                  Contact us via WhatsApp for more information or to schedule a site visit.
-                </p>
-                
-                {settings.whatsapp_number && (
+              {/* Price Card */}
+              <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+                <div className="text-center mb-6">
+                  <div className="text-3xl font-bold text-blue-600">
+                    {formatPrice(plot.price, plot.currency)}
+                  </div>
+                  <div className="text-gray-600">Total Price</div>
+                </div>
+
+                <div className="flex items-center text-gray-700 mb-6">
+                  <MapPin className="w-5 h-5 mr-2" />
+                  <span>{plot.location}</span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
                   <WhatsAppButton
-                    phoneNumber={settings.whatsapp_number}
-                    message={getPlotWhatsAppMessage(plot)}
-                    className="w-full justify-center mb-4"
+                    phoneNumber={whatsappNumber}
+                    message={whatsappMessage}
+                    className="w-full"
+                  />
+                  
+                  <a
+                    href={`tel:${settings?.phoneNumber || '+250788123456'}`}
+                    className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors text-center font-medium block"
                   >
-                    Inquire via WhatsApp
-                  </WhatsAppButton>
-                )}
+                    Call Agent
+                  </a>
+                </div>
 
-                <Link to="/contact" className="btn-secondary w-full justify-center">
-                  Send Email Inquiry
-                </Link>
-
-                <div className="mt-6 pt-6 border-t">
-                  <h4 className="font-semibold mb-3">Contact Information</h4>
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <p>📞 {settings.company_phone || '+250788000000'}</p>
-                    <p>📧 {settings.company_email || 'info@iwacu250.com'}</p>
-                    <p>📍 {settings.company_address || 'Kigali, Rwanda'}</p>
+                {/* Additional Info */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h4 className="font-semibold mb-3">Property Information</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Size:</span>
+                      <span className="font-medium">{formatSize(plot.size, plot.sizeUnit)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Status:</span>
+                      <span className="font-medium">{plot.status}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Type:</span>
+                      <span className="font-medium">Land Plot</span>
+                    </div>
                   </div>
                 </div>
               </div>

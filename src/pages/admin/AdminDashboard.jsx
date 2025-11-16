@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, MapPin, DollarSign, TrendingUp, Plus, LogOut } from 'lucide-react';
+import { LayoutDashboard, MapPin, DollarSign, TrendingUp, Plus, LogOut, Home } from 'lucide-react';
 import { dashboardService } from '../../services/dashboardService';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -16,11 +16,31 @@ const AdminDashboard = () => {
 
   const loadStats = async () => {
     try {
+      // Check if user is authenticated before making request
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        console.error('❌ No auth token found - user not authenticated');
+        toast.error('Please login to access dashboard');
+        return;
+      }
+      
+      console.log('🔍 Loading dashboard stats...');
       const response = await dashboardService.getStats();
       setStats(response.data);
+      console.log('✅ Dashboard stats loaded successfully');
     } catch (error) {
-      console.error('Failed to load stats', error);
-      toast.error('Failed to load dashboard statistics');
+      console.error('❌ Failed to load stats', error);
+      
+      // Handle authentication errors specifically
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        toast.error('Session expired. Please login again.');
+        // Optionally redirect to login
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        toast.error('Failed to load dashboard statistics');
+      }
     } finally {
       setLoading(false);
     }
@@ -42,7 +62,7 @@ const AdminDashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">iwacu 250 Admin</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Iwacu 250 Admin</h1>
               <p className="text-sm text-gray-600">Welcome back, {user?.username}</p>
             </div>
             <div className="flex items-center gap-4">
@@ -89,7 +109,7 @@ const AdminDashboard = () => {
                   </div>
                   <span className="text-3xl font-bold text-green-600">{stats.availablePlots}</span>
                 </div>
-                <h3 className="text-gray-600 font-medium">Available</h3>
+                <h3 className="text-gray-600 font-medium">Available Plots</h3>
               </div>
 
               {/* Sold Plots */}
@@ -100,7 +120,7 @@ const AdminDashboard = () => {
                   </div>
                   <span className="text-3xl font-bold text-red-600">{stats.soldPlots}</span>
                 </div>
-                <h3 className="text-gray-600 font-medium">Sold</h3>
+                <h3 className="text-gray-600 font-medium">Sold Plots</h3>
               </div>
 
               {/* Total Inquiries */}
@@ -117,6 +137,53 @@ const AdminDashboard = () => {
                     {stats.newInquiries} new
                   </p>
                 )}
+              </div>
+            </div>
+
+            {/* House Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Total Houses */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Home className="text-purple-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-gray-900">{stats.totalHouses || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Total Houses</h3>
+              </div>
+
+              {/* Available Houses */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Home className="text-green-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-green-600">{stats.availableHouses || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Available Houses</h3>
+              </div>
+
+              {/* Sold Houses */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Home className="text-red-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-red-600">{stats.soldHouses || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Sold Houses</h3>
+              </div>
+
+              {/* Rented Houses */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <Home className="text-orange-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-orange-600">{stats.rentedHouses || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Rented Houses</h3>
               </div>
             </div>
 
@@ -147,6 +214,28 @@ const AdminDashboard = () => {
                 </Link>
 
                 <Link
+                  to="/admin/houses/new"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <Home className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Add New House</h3>
+                    <p className="text-sm text-gray-600">Create a new house listing</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/admin/houses"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <Home className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Manage Houses</h3>
+                    <p className="text-sm text-gray-600">View and edit all houses</p>
+                  </div>
+                </Link>
+
+                <Link
                   to="/admin/settings"
                   className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
                 >
@@ -168,6 +257,15 @@ const AdminDashboard = () => {
                     <h3 className="font-medium text-gray-900">Plot Status Distribution</h3>
                     <p className="text-sm text-gray-600 mt-1">
                       {stats.availablePlots} Available • {stats.soldPlots} Sold • {stats.reservedPlots} Reserved
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h3 className="font-medium text-gray-900">House Status Distribution</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {stats.availableHouses || 0} Available • {stats.soldHouses || 0} Sold • {stats.pendingHouses || 0} Pending • {stats.rentedHouses || 0} Rented
                     </p>
                   </div>
                 </div>

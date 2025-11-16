@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, MapPin } from 'lucide-react';
 import { plotService } from '../../services/plotService';
 import { formatPrice, formatSize, getStatusBadgeColor } from '../../utils/formatters';
 import { toast } from 'react-toastify';
@@ -15,11 +15,18 @@ const AdminPlots = () => {
 
   const loadPlots = async () => {
     try {
-      const response = await plotService.adminGetAllPlots({ page: 0, size: 100 });
-      setPlots(response.data.content);
+      const response = await plotService.adminGetAllPlots();
+      console.log('Plots API response:', response);
+      // Handle both paginated and non-paginated responses
+      let plotsData = response.content || response.data?.content || response.data || response;
+      // Ensure we always have an array
+      plotsData = Array.isArray(plotsData) ? plotsData : [];
+      console.log('Plots data after processing:', plotsData);
+      setPlots(plotsData);
     } catch (error) {
       console.error('Failed to load plots', error);
       toast.error('Failed to load plots');
+      setPlots([]); // Ensure plots is always an array even on error
     } finally {
       setLoading(false);
     }
@@ -68,6 +75,9 @@ const AdminPlots = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Image
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Title
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -90,6 +100,23 @@ const AdminPlots = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {plots.map((plot) => (
                   <tr key={plot.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          {plot.imageUrl ? (
+                            <img
+                              className="h-10 w-10 rounded-full object-cover"
+                              src={`http://localhost:8080/uploads/${plot.imageUrl}`}
+                              alt={plot.title}
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                              <MapPin className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{plot.title}</div>
                     </td>

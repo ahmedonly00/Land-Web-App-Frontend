@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Maximize, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { formatPrice, formatSize } from '../../utils/formatters';
+import PlaceholderImage from '../common/PlaceholderImage';
 
 const PlotCard = ({ plot }) => {
-  const placeholderImage = 'https://via.placeholder.com/400x300/0ea5e9/ffffff?text=iwacu+250';
+  const [imageError, setImageError] = useState(false);
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {
@@ -24,15 +27,17 @@ const PlotCard = ({ plot }) => {
     <Link to={`/plots/${plot.id}`} className="block group">
       <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50">
         {/* Image */}
-        <div className="relative h-56 overflow-hidden bg-gradient-to-br from-primary-100 to-primary-50">
-          <img
-            src={plot.featuredImageUrl || placeholderImage}
-            alt={plot.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            onError={(e) => {
-              e.target.src = placeholderImage;
-            }}
-          />
+        <div className="relative h-56 overflow-hidden">
+          {!imageError && plot.featuredImageUrl ? (
+            <img
+              src={plot.featuredImageUrl}
+              alt={plot.title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <PlaceholderImage text="Plot Image" className="h-full" />
+          )}
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
           
@@ -93,9 +98,11 @@ const PlotCard = ({ plot }) => {
         </CardContent>
 
         <CardFooter className="px-5 pb-5 pt-0">
-          <div className="w-full text-center text-sm text-primary font-semibold group-hover:underline">
-            View Details →
-          </div>
+          <Link to={`/plots/${plot.id}`} className="w-full">
+            <Button className="w-full">
+              View Details
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </Link>

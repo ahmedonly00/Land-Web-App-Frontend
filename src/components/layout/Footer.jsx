@@ -25,7 +25,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-2xl font-bold mb-4">iwacu 250</h3>
+            <h3 className="text-2xl font-bold mb-4">Iwacu 250</h3>
             <p className="text-gray-400 text-sm mb-2">Multipurpose 250</p>
             <p className="text-gray-400 text-sm">
               Your trusted partner for premium land plots in Rwanda.
@@ -43,7 +43,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/plots" className="text-gray-400 hover:text-white transition text-sm">
-                  Browse Plots
+                  Browse Land | House
                 </Link>
               </li>
               <li>
@@ -65,11 +65,11 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Phone size={16} />
-                {settings.company_phone || '+250788000000'}
+                {settings.company_phone || '+250780314239'}
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Mail size={16} />
-                {settings.company_email || 'info@iwacu250.com'}
+                {settings.company_email || 'karimkanakuze2050@gmail.com'}
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <MapPin size={16} />
@@ -91,7 +91,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} iwacu 250. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Iwacu 250. All rights reserved.</p>
         </div>
       </div>
     </footer>

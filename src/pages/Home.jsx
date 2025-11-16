@@ -21,10 +21,15 @@ const Home = () => {
   const loadFeaturedPlots = async () => {
     try {
       const response = await plotService.getFeaturedPlots(6);
-      setFeaturedPlots(response.data);
+      // Handle the response based on the new API structure
+      // The response could be the data directly or in a data property
+      const plots = response.data || response;
+      setFeaturedPlots(Array.isArray(plots) ? plots : []);
     } catch (error) {
       console.error('Failed to load featured plots', error);
       toast.error('Failed to load featured plots');
+      // Set empty array to prevent undefined errors
+      setFeaturedPlots([]);
     } finally {
       setLoading(false);
     }
@@ -54,13 +59,13 @@ const Home = () => {
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Find Your Perfect
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
-                Land Plot
+                Land Plot and House
               </span>
             </h1>
             
             <p className="text-xl mb-10 text-primary-100 max-w-2xl mx-auto leading-relaxed">
               Discover premium residential, commercial, and agricultural land plots across Rwanda. 
-              Your dream property awaits with iwacu 250.
+              Your dream property awaits with Iwacu 250.
             </p>
             
             <div className="flex flex-wrap gap-4 justify-center">
@@ -127,7 +132,7 @@ const Home = () => {
       <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose iwacu 250?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Iwacu 250?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               We provide exceptional service and premium land plots to help you make the best investment
             </p>
