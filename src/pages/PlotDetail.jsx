@@ -9,6 +9,7 @@ import WhatsAppButton from '../components/common/WhatsAppButton';
 import Loading from '../components/common/Loading';
 import { formatPrice, formatSize, getStatusBadgeColor } from '../utils/formatters';
 import { getPlotWhatsAppMessage } from '../utils/whatsapp';
+import { getImageUrl } from '../utils/imageUtils';
 import { toast } from 'react-toastify';
 
 const PlotDetail = () => {
@@ -72,11 +73,20 @@ const PlotDetail = () => {
   }
 
   const whatsappMessage = getPlotWhatsAppMessage(plot);
-  const whatsappNumber = settings?.whatsappNumber || '+250788123456';
+  const whatsappNumber = settings?.whatsappNumber || '+250780314239';
 
-  const images = plot.images && plot.images.length > 0 
-    ? plot.images 
-    : [{ imageUrl: 'https://via.placeholder.com/800x600/0ea5e9/ffffff?text=iwacu+250' }];
+  // Get images array or fallback to default placeholder
+  const getImages = () => {
+    if (plot.images && plot.images.length > 0) {
+      return plot.images;
+    } else if (plot.imageUrl) {
+      // For backward compatibility with older plot entries
+      return [{ imageUrl: plot.imageUrl }];
+    }
+    return [{ imageUrl: '/placeholder-plot.jpg' }];
+  };
+
+  const images = getImages();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -97,9 +107,12 @@ const PlotDetail = () => {
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
                 <div className="relative h-96 bg-gray-200">
                   <img
-                    src={images[selectedImage]?.imageUrl}
+                    src={getImageUrl(images[selectedImage]?.imageUrl)}
                     alt={plot.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/placeholder-plot.jpg';
+                    }}
                   />
                   <div className="absolute top-4 right-4">
                     <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeColor(plot.status)}`}>
@@ -118,9 +131,12 @@ const PlotDetail = () => {
                         }`}
                       >
                         <img
-                          src={image.imageUrl}
+                          src={getImageUrl(image.imageUrl)}
                           alt={`${plot.title} ${index + 1}`}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-plot.jpg';
+                          }}
                         />
                       </button>
                     ))}

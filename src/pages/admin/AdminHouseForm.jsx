@@ -91,11 +91,13 @@ const AdminHouseForm = () => {
           try {
             const formData = new FormData();
             formData.append('file', imageFile);
-            await houseService.uploadImage(id, formData);
+            // Include displayOrder and isFeatured with default values
+            await houseService.uploadImage(id, formData, 0, false);
             toast.success('Image uploaded successfully');
           } catch (imageError) {
             console.warn('Image upload failed, but house was updated:', imageError);
-            toast.warning('House updated, but image upload failed');
+            const errorMessage = imageError.response?.data?.message || 'Image upload failed';
+            toast.warning(`House updated, but image upload failed: ${errorMessage}`);
           }
         }
       } else {

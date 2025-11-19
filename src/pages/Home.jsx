@@ -59,7 +59,7 @@ const Home = () => {
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Find Your Perfect
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
-                Land Plot and House
+                Land , Plot and House
               </span>
             </h1>
             

@@ -22,6 +22,7 @@ import AdminHouses from './pages/admin/AdminHouses';
 import AdminHouseForm from './pages/admin/AdminHouseForm';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminMedia from './pages/admin/AdminMedia';
+import AdminInquiries from './pages/admin/AdminInquiries';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
             <Route path="/admin/houses/edit/:id" element={<ProtectedRoute><AdminHouseForm /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/media" element={<ProtectedRoute><AdminMedia /></ProtectedRoute>} />
+            <Route path="/admin/inquiries" element={<ProtectedRoute><AdminInquiries /></ProtectedRoute>} />
             
             {/* Catch-all route for 404s */}
             <Route path="*" element={<Navigate to="/" replace />} />

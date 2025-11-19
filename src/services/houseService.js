@@ -193,16 +193,25 @@ const houseService = {
   },
   
   // Image management
-  uploadImage: async (houseId, formData) => {
+  uploadImage: async (houseId, formData, displayOrder = 0, isFeatured = false) => {
     try {
-      const response = await api.post(`/admin/houses/uploadImage/${houseId}`, formData, {
+      // Ensure all required fields are included
+      const uploadData = new FormData();
+      uploadData.append('file', formData.get('file'));
+      uploadData.append('displayOrder', displayOrder);
+      uploadData.append('isFeatured', isFeatured);
+
+      const response = await api.post(`/admin/houses/uploadImage/${houseId}`, uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
     } catch (error) {
-      return handleApiError(error, 'uploadImage');
+      console.error('Image upload failed:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to upload image. Please try again.';
+      toast.error(errorMessage);
+      throw error;
     }
   },
   

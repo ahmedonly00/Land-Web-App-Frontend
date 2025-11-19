@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, MapPin, DollarSign, TrendingUp, Plus, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, MapPin, DollarSign, TrendingUp, Plus, LogOut, Home, MessageSquare } from 'lucide-react';
 import { dashboardService } from '../../services/dashboardService';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
+import InquiriesList from '../../components/admin/InquiriesList';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -278,11 +279,13 @@ const AdminDashboard = () => {
                       {stats.newInquiries > 0 && ` (${stats.newInquiries} new)`}
                     </p>
                   </div>
-                  {stats.newInquiries > 0 && (
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                      {stats.newInquiries} New
-                    </span>
-                  )}
+                  <Link 
+                    to="/admin/inquiries" 
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
+                    View All
+                  </Link>
                 </div>
               </div>
             </div>

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, Building2, Home, Bed, Bath, Ruler, DollarSign, MapPin } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, SlidersHorizontal } from 'lucide-react';
 import houseService from '../services/houseService';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Loading from '../components/common/Loading';
 import { toast } from 'react-toastify';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import HouseCard from '../components/house/HouseCard';
 
 const HouseList = () => {
   const [searchParams] = useSearchParams();
@@ -214,62 +214,7 @@ const HouseList = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {houses.map(house => (
-                <div key={house.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={house.featuredImageUrl || '/placeholder-house.jpg'}
-                      alt={house.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        e.target.src = '/placeholder-house.jpg';
-                      }}
-                    />
-                    <Badge 
-                      variant={house.status === 'Available' ? 'success' : 'destructive'} 
-                      className="absolute top-2 right-2"
-                    >
-                      {house.status || 'Available'}
-                    </Badge>
-                  </div>
-
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1 line-clamp-1">{house.title}</h3>
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
-                      <MapPin size={14} className="mr-1" />
-                      <span className="line-clamp-1">{house.location}</span>
-                    </div>
-
-                    <div className="mt-2 flex items-center justify-between">
-                      <div className="flex items-center text-sm font-medium text-gray-800">
-                        <DollarSign size={14} className="mr-1" />
-                        <span>{house.price ? `RWF ${house.price.toLocaleString()}` : 'Price on request'}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Bed size={14} className="mr-1" />
-                          <span>{house.bedrooms || 'N/A'}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Bath size={14} className="mr-1" />
-                          <span>{house.bathrooms || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {house.size && (
-                      <div className="mt-2 flex items-center text-sm text-gray-600">
-                        <Ruler size={14} className="mr-1" />
-                        <span>{house.size} sqm</span>
-                      </div>
-                    )}
-
-                    <Link to={`/houses/${house.id}`}>
-                      <Button className="w-full mt-4">
-                        View Details
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+                <HouseCard key={house.id} house={house} />
               ))}
             </div>
 

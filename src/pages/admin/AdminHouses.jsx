@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, Eye, Home, MapPin, DollarSign, Calendar } from 'lucide-react';
 import { toast } from 'react-toastify';
 import houseService from '../../services/houseService';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const AdminHouses = () => {
   const [houses, setHouses] = useState([]);
@@ -136,8 +137,11 @@ const AdminHouses = () => {
                             {house.imageUrl ? (
                               <img
                                 className="h-10 w-10 rounded-full object-cover"
-                                src={house.imageUrl}
+                                src={getImageUrl(house.imageUrl)}
                                 alt={house.title}
+                                onError={(e) => {
+                                  e.target.src = '/placeholder-house.jpg';
+                                }}
                               />
                             ) : (
                               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">

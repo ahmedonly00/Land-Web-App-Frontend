@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Building2, Maximize, DollarSign, ArrowLeft, Check, Bed, Bath, Calendar, Home } from 'lucide-react';
+import { getImageUrl } from '../utils/imageUtils';
 import houseService from '../services/houseService';
 import { settingsService } from '../services/settingsService';
 import Header from '../components/layout/Header';
@@ -72,7 +73,7 @@ const HouseDetail = () => {
   }
 
   const whatsappMessage = getHouseWhatsAppMessage(house, settings);
-  const whatsappNumber = settings?.whatsappNumber || '+250788123456';
+  const whatsappNumber = settings?.whatsappNumber || '+250780314239';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -94,12 +95,43 @@ const HouseDetail = () => {
             <div className="lg:col-span-2">
               {/* Images */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-                {house.imageUrl ? (
+                {house.images && house.images.length > 0 ? (
                   <div className="relative">
                     <img
-                      src={`http://localhost:8080/uploads/${house.imageUrl}`}
+                      src={getImageUrl(house.images[0].imageUrl)}
                       alt={house.title}
                       className="w-full h-96 object-cover"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-house.jpg';
+                      }}
+                    />
+                    {/* Image gallery thumbnails */}
+                    {house.images.length > 1 && (
+                      <div className="flex space-x-2 mt-2 overflow-x-auto p-2">
+                        {house.images.map((img, index) => (
+                          <img
+                            key={index}
+                            src={getImageUrl(img.imageUrl)}
+                            alt={`${house.title} - ${index + 1}`}
+                            className="w-16 h-16 object-cover rounded cursor-pointer hover:ring-2 hover:ring-primary"
+                            onClick={() => setSelectedImage(index)}
+                            onError={(e) => {
+                              e.target.src = '/placeholder-house.jpg';
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : house.imageUrl ? (
+                  <div className="relative">
+                    <img
+                      src={getImageUrl(house.imageUrl)}
+                      alt={house.title}
+                      className="w-full h-96 object-cover"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-house.jpg';
+                      }}
                     />
                   </div>
                 ) : (
