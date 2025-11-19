@@ -1,7 +1,5 @@
 # Documentation and temporary files (root level only)
-/*.md
 /*.txt
-/*.json
 /*.sql
 
 # Logs
