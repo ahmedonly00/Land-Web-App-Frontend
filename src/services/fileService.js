@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.iwacu250.com';
+// Use the same API base URL as configured in the environment
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.iwacu250.com';
 
 export const uploadFile = async (file, type = 'image') => {
   const formData = new FormData();

@@ -4,6 +4,7 @@ import { Plus, Edit, Trash2, Eye, MapPin } from 'lucide-react';
 import { plotService } from '../../services/plotService';
 import { formatPrice, formatSize, getStatusBadgeColor } from '../../utils/formatters';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const AdminPlots = () => {
   const [plots, setPlots] = useState([]);
@@ -106,8 +107,12 @@ const AdminPlots = () => {
                           {plot.imageUrl ? (
                             <img
                               className="h-10 w-10 rounded-full object-cover"
-                              src={`http://localhost:8080/uploads/${plot.imageUrl}`}
+                              src={getImageUrl(plot.imageUrl)}
                               alt={plot.title}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = '/placeholder-image.jpg';
+                              }}
                             />
                           ) : (
                             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">

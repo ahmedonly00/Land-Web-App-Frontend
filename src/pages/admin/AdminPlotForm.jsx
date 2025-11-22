@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { ArrowLeft, Save } from 'lucide-react';
 import { plotService } from '../../services/plotService';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const AdminPlotForm = () => {
   const { id } = useParams();
@@ -221,9 +222,13 @@ const AdminPlotForm = () => {
                     <div className="mb-4">
                       <p className="text-sm text-gray-600 mb-2">Current image:</p>
                       <img
-                        src={`http://localhost:8080/uploads/${plot.imageUrl}`}
+                        src={getImageUrl(plot.imageUrl)}
                         alt="Current plot image"
                         className="h-32 w-32 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/placeholder-image.jpg';
+                        }}
                       />
                     </div>
                   )}

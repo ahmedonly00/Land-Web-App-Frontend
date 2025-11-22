@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-//const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.iwacu250.com';
-
+// Use environment variable with fallback for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 // Create axios instance
 const api = axios.create({

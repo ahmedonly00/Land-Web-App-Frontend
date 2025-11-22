@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Home, MapPin, DollarSign, Bed, Bath, Square, FileText } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../utils/imageUtils';
 import houseService from '../../services/houseService';
 
 const AdminHouseForm = () => {
@@ -335,9 +336,13 @@ const AdminHouseForm = () => {
                     <div className="mb-4">
                       <p className="text-sm text-gray-600 mb-2">Current image:</p>
                       <img
-                        src={`http://localhost:8080/uploads/${house.imageUrl}`}
+                        src={getImageUrl(house.imageUrl)}
                         alt="Current house image"
                         className="h-32 w-32 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/placeholder-image.jpg';
+                        }}
                       />
                     </div>
                   )}
