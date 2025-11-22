@@ -152,5 +152,23 @@ api.interceptors.response.use(
 // Export the configured axios instance
 export default api;
 
+// Test API connection
+export const testApiConnection = async () => {
+  try {
+    const response = await api.get('/health');
+    return {
+      success: true,
+      status: response.status,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      status: error.response?.status,
+      message: error.message
+    };
+  }
+};
+
 // Export the base URL for reference
 export { API_BASE_URL };

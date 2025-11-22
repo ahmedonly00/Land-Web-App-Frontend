@@ -109,7 +109,7 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
+          {/* <div className="mt-6 text-center text-sm text-gray-600">
             <p>Default credentials:</p>
             <p className="font-mono bg-gray-100 px-3 py-2 rounded mt-2">
               admin / admin123
@@ -117,7 +117,7 @@ const AdminLogin = () => {
             <p className="text-xs text-red-600 mt-2">
               ⚠️ Change password after first login
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Back to Home */}
