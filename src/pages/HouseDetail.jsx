@@ -28,14 +28,27 @@ const HouseDetail = () => {
     try {
       const houseData = await houseService.getHouseById(id);
       
+      // Process images to ensure they have the correct URL format
+      const processImages = (images) => {
+        if (!images || !Array.isArray(images)) return [];
+        return images.map(img => ({
+          ...img,
+          imageUrl: getImageUrl(img.imageUrl)
+        }));
+      };
+      
       // Format the house data to ensure consistent image URL handling
       const formattedHouse = {
         ...houseData,
+        // Process images array if it exists
+        images: houseData.images ? processImages(houseData.images) : [],
         // Ensure we have a featuredImageUrl for backward compatibility
-        featuredImageUrl: houseData.featuredImageUrl || 
-                         (houseData.images && houseData.images[0]?.imageUrl) ||
-                         houseData.imageUrl ||
-                         ''
+        featuredImageUrl: getImageUrl(
+          houseData.featuredImageUrl || 
+          (houseData.images && houseData.images[0]?.imageUrl) ||
+          houseData.imageUrl ||
+          ''
+        )
       };
       
       console.log('Formatted house data:', formattedHouse);
@@ -110,7 +123,7 @@ const HouseDetail = () => {
                 {house.images && house.images.length > 0 ? (
                   <div className="relative">
                     <img
-                      src={getImageUrl(house.images[0]?.imageUrl || '')}
+                      src={house.images[selectedImage]?.imageUrl || house.featuredImageUrl || '/placeholder-house.jpg'}
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
@@ -121,34 +134,36 @@ const HouseDetail = () => {
                     {/* Image gallery thumbnails */}
                     {house.images.length > 1 && (
                       <div className="flex space-x-2 mt-2 overflow-x-auto p-2">
-                        {house.images.map((img, index) => {
-                          const imgUrl = getImageUrl(img?.imageUrl || '');
-                          console.log(`Thumbnail ${index} URL:`, imgUrl);
-                          return (
+                        {house.images.map((img, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setSelectedImage(index)}
+                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                              selectedImage === index ? 'border-primary-600' : 'border-gray-200'
+                            }`}
+                          >
                             <img
-                              key={index}
-                              src={imgUrl}
+                              src={img.imageUrl}
                               alt={`${house.title} - ${index + 1}`}
-                              className="w-16 h-16 object-cover rounded cursor-pointer hover:ring-2 hover:ring-primary"
-                              onClick={() => setSelectedImage(index)}
+                              className="w-full h-full object-cover"
                               onError={(e) => {
                                 console.error('Error loading thumbnail:', e.target.src);
                                 e.target.src = '/placeholder-house.jpg';
                               }}
                             />
-                          );
-                        })}
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
-                ) : house.imageUrl ? (
+                ) : house.featuredImageUrl ? (
                   <div className="relative">
                     <img
-                      src={getImageUrl(house.imageUrl)}
+                      src={house.featuredImageUrl}
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
-                        console.error('Error loading single image:', e.target.src);
+                        console.error('Error loading featured image:', e.target.src);
                         e.target.src = '/placeholder-house.jpg';
                       }}
                     />
