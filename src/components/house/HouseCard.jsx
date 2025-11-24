@@ -1,32 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { MapPin, Home, Bed, Bath, Ruler, Heart } from 'lucide-react';
 import { formatPrice } from '../../utils/formatters';
 import PlaceholderImage from '../ui/placeholder-image';
-import { getImageUrl, checkImageExists } from '../../utils/imageUtils';
+import { getImageUrl } from '../../utils/imageUtils';
 import { Button } from '../ui/button';
 
 const HouseCard = ({ house }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  
-  useEffect(() => {
-    const loadImage = async () => {
-      if (house.featuredImageUrl) {
-        const url = getImageUrl(house.featuredImageUrl);
-        const exists = await checkImageExists(url);
-        if (exists) {
-          setImageUrl(url);
-        } else {
-          setImageError(true);
-        }
-      }
-    };
-    
-    loadImage();
-  }, [house.featuredImageUrl]);
+  const imageUrl = house.featuredImageUrl ? getImageUrl(house.featuredImageUrl) : '';
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {
@@ -52,6 +36,7 @@ const HouseCard = ({ house }) => {
               alt={house.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               onError={() => setImageError(true)}
+              loading="lazy"
             />
           ) : (
             <PlaceholderImage text="House Image" className="h-full" />

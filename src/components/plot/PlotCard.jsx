@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
@@ -6,27 +6,11 @@ import { Badge } from '../ui/badge';
 import { MapPin, Maximize, TrendingUp } from 'lucide-react';
 import { formatPrice, formatSize } from '../../utils/formatters';
 import PlaceholderImage from '../ui/placeholder-image';
-import { getImageUrl, checkImageExists } from '../../utils/imageUtils';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const PlotCard = ({ plot }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  
-  useEffect(() => {
-    const loadImage = async () => {
-      if (plot.featuredImageUrl) {
-        const url = getImageUrl(plot.featuredImageUrl);
-        const exists = await checkImageExists(url);
-        if (exists) {
-          setImageUrl(url);
-        } else {
-          setImageError(true);
-        }
-      }
-    };
-    
-    loadImage();
-  }, [plot.featuredImageUrl]);
+  const imageUrl = plot.featuredImageUrl ? getImageUrl(plot.featuredImageUrl) : '';
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {
@@ -53,6 +37,7 @@ const PlotCard = ({ plot }) => {
                 alt={plot.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 onError={() => setImageError(true)}
+                loading="lazy"
               />
             ) : (
               <PlaceholderImage text="Plot Image" className="h-full" />
