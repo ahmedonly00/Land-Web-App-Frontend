@@ -14,8 +14,31 @@ const HouseCard = ({ house }) => {
   // Debug log to see the house data
   console.log('House data in HouseCard:', house);
   
-  // Get the image URL with fallbacks - simplified to match PlotCard
-  const imageUrl = house.featuredImageUrl ? getImageUrl(house.featuredImageUrl) : '';
+  // Get the image URL with fallbacks
+  const getImageSource = () => {
+    // Try featuredImageUrl first
+    if (house.featuredImageUrl) {
+      return getImageUrl(house.featuredImageUrl);
+    }
+    
+    // Then try images array
+    if (house.images && house.images.length > 0) {
+      const firstImg = house.images[0];
+      const imgPath = typeof firstImg === 'string' ? firstImg : firstImg?.imageUrl;
+      if (imgPath) {
+        return getImageUrl(imgPath);
+      }
+    }
+    
+    // Fall back to imageUrl
+    if (house.imageUrl) {
+      return getImageUrl(house.imageUrl);
+    }
+    
+    return '';
+  };
+  
+  const imageUrl = getImageSource();
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {

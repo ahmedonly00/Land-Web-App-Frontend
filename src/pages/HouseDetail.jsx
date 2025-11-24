@@ -31,10 +31,21 @@ const HouseDetail = () => {
       // Process images to ensure they have the correct URL format
       const processImages = (images) => {
         if (!images || !Array.isArray(images)) return [];
-        return images.map(img => ({
-          ...img,
-          imageUrl: getImageUrl(img.imageUrl)
-        }));
+        return images.map(img => {
+          // Handle both string paths and image objects
+          const imagePath = typeof img === 'string' ? img : (img?.imageUrl || '');
+          return {
+            ...(typeof img === 'object' ? img : {}),
+            imageUrl: getImageUrl(imagePath)
+          };
+        });
+      };
+      
+      // Get the first image URL regardless of format
+      const getFirstImageUrl = (images) => {
+        if (!images || !images.length) return '';
+        const firstImg = images[0];
+        return typeof firstImg === 'string' ? firstImg : firstImg?.imageUrl || '';
       };
       
       // Format the house data to ensure consistent image URL handling
@@ -45,7 +56,7 @@ const HouseDetail = () => {
         // Ensure we have a featuredImageUrl for backward compatibility
         featuredImageUrl: getImageUrl(
           houseData.featuredImageUrl || 
-          (houseData.images && houseData.images[0]?.imageUrl) ||
+          getFirstImageUrl(houseData.images) ||
           houseData.imageUrl ||
           ''
         )
