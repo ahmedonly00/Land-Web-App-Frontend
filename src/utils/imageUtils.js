@@ -9,11 +9,19 @@ export const getImageUrl = (imagePath) => {
     return imagePath;
   }
 
-  // Remove any leading slashes and the 'api/' prefix if present
-  let cleanPath = imagePath.replace(/^[\/\\]+|^api\//, '');
+  // Handle relative paths that start with 'images/'
+  if (imagePath.startsWith('images/')) {
+    return `${API_BASE_URL}/${imagePath}`;
+  }
+
+  // For backward compatibility with other path formats
+  let cleanPath = imagePath;
+  
+  // Remove any leading slashes
+  cleanPath = cleanPath.replace(/^[\/\\]+/, '');
   
   // Remove any duplicate 'uploads/images' or 'images' segments
-  cleanPath = cleanPath.replace(/^uploads\/images\/|^images\//, '');
+  cleanPath = cleanPath.replace(/^(uploads\/)?(images\/)?/, '');
   
   // Construct the final URL
   return `${API_BASE_URL}/uploads/images/${cleanPath}`;
