@@ -27,50 +27,58 @@ const HouseDetail = () => {
   const loadHouse = async () => {
     try {
       const houseData = await houseService.getHouseById(id);
-      
-      // Process images to ensure they have the correct URL format
-      const processImages = (images) => {
-        if (!images || !Array.isArray(images)) return [];
-        return images.map(img => {
-          // Handle both string paths and image objects
-          const imagePath = typeof img === 'string' ? img : (img?.imageUrl || '');
-          return {
-            ...(typeof img === 'object' ? img : {}),
-            imageUrl: getImageUrl(imagePath)
-          };
-        });
-      };
-      
-      // Get the first image URL regardless of format
-      const getFirstImageUrl = (images) => {
-        if (!images || !images.length) return '';
-        const firstImg = images[0];
-        return typeof firstImg === 'string' ? firstImg : firstImg?.imageUrl || '';
-      };
-      
-      // Format the house data to ensure consistent image URL handling
-      const formattedHouse = {
-        ...houseData,
-        // Process images array if it exists
-        images: houseData.images ? processImages(houseData.images) : [],
-        // Ensure we have a featuredImageUrl for backward compatibility
-        featuredImageUrl: getImageUrl(
-          houseData.featuredImageUrl || 
-          getFirstImageUrl(houseData.images) ||
-          houseData.imageUrl ||
-          ''
-        )
-      };
-      
-      console.log('Formatted house data:', formattedHouse);
-      setHouse(formattedHouse);
+      setHouse(houseData);
+
     } catch (error) {
       console.error('Failed to load house', error);
       toast.error('Failed to load house details');
     } finally {
       setLoading(false);
-    }
-  };
+    }  
+      
+      // // Process images to ensure they have the correct URL format
+      // const processImages = (images) => {
+      //   if (!images || !Array.isArray(images)) return [];
+      //   return images.map(img => {
+      //     // Handle both string paths and image objects
+      //     const imagePath = typeof img === 'string' ? img : (img?.imageUrl || '');
+      //     return {
+      //       ...(typeof img === 'object' ? img : {}),
+      //       imageUrl: getImageUrl(imagePath)
+      //     };
+      //   });
+    };
+      
+      // // Get the first image URL regardless of format
+      // const getFirstImageUrl = (images) => {
+      //   if (!images || !images.length) return '';
+      //   const firstImg = images[0];
+      //   return typeof firstImg === 'string' ? firstImg : firstImg?.imageUrl || '';
+      // };
+      
+      // // Format the house data to ensure consistent image URL handling
+      // const formattedHouse = {
+      //   ...houseData,
+      //   // Process images array if it exists
+      //   images: houseData.images ? processImages(houseData.images) : [],
+      //   // Ensure we have a featuredImageUrl for backward compatibility
+      //   featuredImageUrl: getImageUrl(
+      //     houseData.featuredImageUrl || 
+      //     getFirstImageUrl(houseData.images) ||
+      //     houseData.imageUrl ||
+      //     ''
+      //   )
+      // };
+      
+  //     console.log('Formatted house data:', formattedHouse);
+  //     setHouse(formattedHouse);
+  //   } catch (error) {
+  //     console.error('Failed to load house', error);
+  //     toast.error('Failed to load house details');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const loadSettings = async () => {
     try {
@@ -111,6 +119,32 @@ const HouseDetail = () => {
   const whatsappMessage = getHouseWhatsAppMessage(house, settings);
   const whatsappNumber = settings?.whatsappNumber || '+250780314239';
 
+  // Get images array or fallback to default placeholder
+  const getImages = () => {
+    const images = [];
+    
+    // Check for images array first
+    if (house.images && house.images.length > 0) {
+      return house.images.map(img => ({
+        ...img,
+        imageUrl: getImageUrl(img.imageUrl)
+      }));
+    } 
+    
+    // Fallback to imageUrl for backward compatibility
+    if (house.imageUrl) {
+      return [{
+        imageUrl: getImageUrl(house.imageUrl)
+      }];
+    }
+    
+    // Default placeholder if no images found
+    return [{ imageUrl: '/placeholder-house.jpg' }];
+  };
+
+  const images = getImages();
+  console.log('House images:', images);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -131,10 +165,10 @@ const HouseDetail = () => {
             <div className="lg:col-span-2">
               {/* Images */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-                {house.images && house.images.length > 0 ? (
+                {images && images.length > 0 ? (
                   <div className="relative">
                     <img
-                      src={house.images[selectedImage]?.imageUrl || house.featuredImageUrl || '/placeholder-house.jpg'}
+                      src={getImageUrl(images[selectedImage]?.imageUrl || house.featuredImageUrl || '/placeholder-house.jpg')}
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
@@ -143,9 +177,9 @@ const HouseDetail = () => {
                       }}
                     />
                     {/* Image gallery thumbnails */}
-                    {house.images.length > 1 && (
+                    {images.length > 1 && (
                       <div className="flex space-x-2 mt-2 overflow-x-auto p-2">
-                        {house.images.map((img, index) => (
+                        {images.map((img, index) => (
                           <button
                             key={index}
                             onClick={() => setSelectedImage(index)}
@@ -167,10 +201,10 @@ const HouseDetail = () => {
                       </div>
                     )}
                   </div>
-                ) : house.featuredImageUrl ? (
+                ) : images.length > 0 ? (
                   <div className="relative">
                     <img
-                      src={house.featuredImageUrl}
+                      src={images[0].imageUrl}
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
