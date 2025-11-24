@@ -151,7 +151,7 @@ const houseService = {
   
   updateHouse: async (id, houseData) => {
     try {
-      const response = await api.put('/api/admin/houses/updateHouse/${id}', houseData);
+      const response = await api.put(`/api/admin/houses/updateHouse/${id}`, houseData);
       return response.data;
     } catch (error) {
       if (error.response?.status === 400) {
