@@ -9,22 +9,25 @@ export const getImageUrl = (imagePath) => {
     return imagePath;
   }
 
-  // Handle relative paths that start with 'images/'
-  if (imagePath.startsWith('images/')) {
-    return `${API_BASE_URL}/${imagePath}`;
-  }
-
-  // For backward compatibility with other path formats
+  // Log the original path for debugging
+  console.log('Original image path:', imagePath);
+  
+  // Handle different path formats
   let cleanPath = imagePath;
   
   // Remove any leading slashes
   cleanPath = cleanPath.replace(/^[\/\\]+/, '');
   
-  // Remove any duplicate 'uploads/images' or 'images' segments
-  cleanPath = cleanPath.replace(/^(uploads\/)?(images\/)?/, '');
+  // Check if the path already includes 'uploads/images' or 'images'
+  if (!cleanPath.includes('uploads/images') && !cleanPath.startsWith('images/')) {
+    cleanPath = `uploads/images/${cleanPath}`;
+  }
   
   // Construct the final URL
-  return `${API_BASE_URL}/uploads/images/${cleanPath}`;
+  const imageUrl = `${API_BASE_URL}/${cleanPath}`;
+  console.log('Generated image URL:', imageUrl);
+  
+  return imageUrl;
 };
 
 export const checkImageExists = async (url) => {

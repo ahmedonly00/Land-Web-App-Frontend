@@ -10,7 +10,26 @@ import { Button } from '../ui/button';
 
 const HouseCard = ({ house }) => {
   const [imageError, setImageError] = useState(false);
-  const imageUrl = house.featuredImageUrl ? getImageUrl(house.featuredImageUrl) : '';
+  
+  // Debug log to see the house data
+  console.log('House data in HouseCard:', house);
+  
+  // Get the image URL with fallbacks
+  const getImageSource = () => {
+    if (house.featuredImageUrl) {
+      return getImageUrl(house.featuredImageUrl);
+    }
+    if (house.images && house.images.length > 0 && house.images[0].imageUrl) {
+      return getImageUrl(house.images[0].imageUrl);
+    }
+    if (house.imageUrl) {
+      return getImageUrl(house.imageUrl);
+    }
+    return '';
+  };
+  
+  const imageUrl = getImageSource();
+  console.log('Generated image URL:', imageUrl);
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {
