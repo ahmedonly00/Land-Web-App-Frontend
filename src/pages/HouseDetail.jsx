@@ -219,7 +219,7 @@ const HouseDetail = () => {
                   />
                   
                   <a
-                    href={`tel:${settings?.phoneNumber || '+250788123456'}`}
+                    href={`tel:${settings?.phoneNumber || '+250780314239'}`}
                     className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors text-center font-medium block"
                   >
                     Call Agent
