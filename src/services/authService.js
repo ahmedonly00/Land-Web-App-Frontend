@@ -32,7 +32,7 @@ export const authService = {
       });
 
       // Make API call with proper format
-      const response = await api.post('/auth/login', { 
+      const response = await api.post('/api/auth/login', { 
         username: username.trim(), 
         password: password 
       });
