@@ -23,8 +23,22 @@ const Home = () => {
       const response = await plotService.getFeaturedPlots(6);
       // Handle the response based on the new API structure
       // The response could be the data directly or in a data property
-      const plots = response.data || response;
-      setFeaturedPlots(Array.isArray(plots) ? plots : []);
+      let plots = response.data || response;
+      
+      // Ensure we have an array
+      plots = Array.isArray(plots) ? plots : [];
+      
+      // Log the plots data for debugging
+      console.log('Plots data:', plots);
+      
+      // Map the plots to ensure they have the expected structure
+      const formattedPlots = plots.map(plot => ({
+        ...plot,
+        // If the API returns images as an array, use the first one as featured
+        featuredImageUrl: plot.featuredImageUrl || (plot.images && plot.images[0]?.imageUrl) || ''
+      }));
+      
+      setFeaturedPlots(formattedPlots);
     } catch (error) {
       console.error('Failed to load featured plots', error);
       toast.error('Failed to load featured plots');
