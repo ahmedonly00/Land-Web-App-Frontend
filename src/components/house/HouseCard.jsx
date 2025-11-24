@@ -16,20 +16,35 @@ const HouseCard = ({ house }) => {
   
   // Get the image URL with fallbacks
   const getImageSource = () => {
+    // Try featured image first
     if (house.featuredImageUrl) {
-      return getImageUrl(house.featuredImageUrl);
+      const url = getImageUrl(house.featuredImageUrl);
+      console.log('Using featuredImageUrl:', url);
+      return url;
     }
-    if (house.images && house.images.length > 0 && house.images[0].imageUrl) {
-      return getImageUrl(house.images[0].imageUrl);
+    
+    // Then try images array
+    if (house.images && house.images.length > 0) {
+      const firstImage = house.images[0]?.imageUrl;
+      if (firstImage) {
+        const url = getImageUrl(firstImage);
+        console.log('Using first image from images array:', url);
+        return url;
+      }
     }
+    
+    // Fall back to imageUrl
     if (house.imageUrl) {
-      return getImageUrl(house.imageUrl);
+      const url = getImageUrl(house.imageUrl);
+      console.log('Using imageUrl:', url);
+      return url;
     }
+    
+    console.log('No valid image source found');
     return '';
   };
   
   const imageUrl = getImageSource();
-  console.log('Generated image URL:', imageUrl);
 
   const getStatusVariant = (status) => {
     switch (status?.toUpperCase()) {

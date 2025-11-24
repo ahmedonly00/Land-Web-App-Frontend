@@ -110,28 +110,34 @@ const HouseDetail = () => {
                 {house.images && house.images.length > 0 ? (
                   <div className="relative">
                     <img
-                      src={getImageUrl(house.images[0].imageUrl)}
+                      src={getImageUrl(house.images[0]?.imageUrl || '')}
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
+                        console.error('Error loading main image:', e.target.src);
                         e.target.src = '/placeholder-house.jpg';
                       }}
                     />
                     {/* Image gallery thumbnails */}
                     {house.images.length > 1 && (
                       <div className="flex space-x-2 mt-2 overflow-x-auto p-2">
-                        {house.images.map((img, index) => (
-                          <img
-                            key={index}
-                            src={getImageUrl(img.imageUrl)}
-                            alt={`${house.title} - ${index + 1}`}
-                            className="w-16 h-16 object-cover rounded cursor-pointer hover:ring-2 hover:ring-primary"
-                            onClick={() => setSelectedImage(index)}
-                            onError={(e) => {
-                              e.target.src = '/placeholder-house.jpg';
-                            }}
-                          />
-                        ))}
+                        {house.images.map((img, index) => {
+                          const imgUrl = getImageUrl(img?.imageUrl || '');
+                          console.log(`Thumbnail ${index} URL:`, imgUrl);
+                          return (
+                            <img
+                              key={index}
+                              src={imgUrl}
+                              alt={`${house.title} - ${index + 1}`}
+                              className="w-16 h-16 object-cover rounded cursor-pointer hover:ring-2 hover:ring-primary"
+                              onClick={() => setSelectedImage(index)}
+                              onError={(e) => {
+                                console.error('Error loading thumbnail:', e.target.src);
+                                e.target.src = '/placeholder-house.jpg';
+                              }}
+                            />
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -142,13 +148,14 @@ const HouseDetail = () => {
                       alt={house.title}
                       className="w-full h-96 object-cover"
                       onError={(e) => {
+                        console.error('Error loading single image:', e.target.src);
                         e.target.src = '/placeholder-house.jpg';
                       }}
                     />
                   </div>
                 ) : (
                   <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
-                    <Building2 className="w-16 h-16 text-gray-400" />
+                    <Home className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
               </div>

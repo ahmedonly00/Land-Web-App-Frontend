@@ -77,16 +77,29 @@ const PlotDetail = () => {
 
   // Get images array or fallback to default placeholder
   const getImages = () => {
+    const images = [];
+    
+    // Check for images array first
     if (plot.images && plot.images.length > 0) {
-      return plot.images;
-    } else if (plot.imageUrl) {
-      // For backward compatibility with older plot entries
-      return [{ imageUrl: plot.imageUrl }];
+      return plot.images.map(img => ({
+        ...img,
+        imageUrl: getImageUrl(img.imageUrl)
+      }));
+    } 
+    
+    // Fallback to imageUrl for backward compatibility
+    if (plot.imageUrl) {
+      return [{
+        imageUrl: getImageUrl(plot.imageUrl)
+      }];
     }
+    
+    // Default placeholder if no images found
     return [{ imageUrl: '/placeholder-plot.jpg' }];
   };
 
   const images = getImages();
+  console.log('Plot images:', images);
 
   return (
     <div className="min-h-screen flex flex-col">

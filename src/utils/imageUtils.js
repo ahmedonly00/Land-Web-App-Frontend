@@ -18,10 +18,11 @@ export const getImageUrl = (imagePath) => {
   // Remove any leading slashes
   cleanPath = cleanPath.replace(/^[\/\\]+/, '');
   
-  // Check if the path already includes 'uploads/images' or 'images'
-  if (!cleanPath.includes('uploads/images') && !cleanPath.startsWith('images/')) {
-    cleanPath = `uploads/images/${cleanPath}`;
-  }
+  // Remove any existing 'uploads/images/' or 'images/' prefixes to avoid duplication
+  cleanPath = cleanPath.replace(/^(uploads\/)?(images\/)?/, '');
+  
+  // Always use 'uploads/images/' as the prefix
+  cleanPath = `uploads/images/${cleanPath}`;
   
   // Construct the final URL
   const imageUrl = `${API_BASE_URL}/${cleanPath}`;

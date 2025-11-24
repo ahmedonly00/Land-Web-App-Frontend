@@ -50,21 +50,39 @@ const PlotsList = () => {
 
       const response = await plotService.getAllPlots(params);
       
+      // Process the response to ensure consistent data structure
+      let plotData = [];
+      let pages = 1;
+      
       if (response && Array.isArray(response.content)) {
-        setPlots(response.content);
-        setTotalPages(response.totalPages || 1);
+        plotData = response.content;
+        pages = response.totalPages || 1;
       } else if (response && response.data && Array.isArray(response.data.content)) {
-        setPlots(response.data.content);
-        setTotalPages(response.data.totalPages || 1);
+        plotData = response.data.content;
+        pages = response.data.totalPages || 1;
       } else if (Array.isArray(response)) {
-        setPlots(response);
-        setTotalPages(1);
+        plotData = response;
+        pages = 1;
       } else {
         console.error('Unexpected response format:', response);
         setPlots([]);
         setTotalPages(0);
+        setLoading(false);
         toast.error('Unexpected response format from server');
+        return;
       }
+      
+      // Ensure each plot has a featuredImageUrl
+      const formattedPlots = plotData.map(plot => ({
+        ...plot,
+        featuredImageUrl: plot.featuredImageUrl || 
+                         (plot.images && plot.images[0]?.imageUrl) || 
+                         plot.imageUrl ||
+                         ''
+      }));
+      
+      setPlots(formattedPlots);
+      setTotalPages(pages);
     } catch (error) {
       console.error('Failed to load plots', error);
       // Check if it's a 404 (not found) error
