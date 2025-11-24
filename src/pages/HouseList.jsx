@@ -49,7 +49,17 @@ const HouseList = () => {
       
       // The service now returns the correct structure
       if (response && response.content) {
-        setHouses(response.content);
+        // Format the houses data to ensure consistent image URL handling
+        const formattedHouses = response.content.map(house => ({
+          ...house,
+          // If the API returns images as an array, use the first one as featured
+          featuredImageUrl: house.featuredImageUrl || 
+                          (house.images && house.images[0]?.imageUrl) || 
+                          ''
+        }));
+        
+        console.log('Formatted houses:', formattedHouses);
+        setHouses(formattedHouses);
         setTotalPages(response.totalPages || 1);
       } else {
         console.error('Unexpected response format:', response);

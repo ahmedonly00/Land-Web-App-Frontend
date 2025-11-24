@@ -27,7 +27,19 @@ const HouseDetail = () => {
   const loadHouse = async () => {
     try {
       const houseData = await houseService.getHouseById(id);
-      setHouse(houseData);
+      
+      // Format the house data to ensure consistent image URL handling
+      const formattedHouse = {
+        ...houseData,
+        // Ensure we have a featuredImageUrl for backward compatibility
+        featuredImageUrl: houseData.featuredImageUrl || 
+                         (houseData.images && houseData.images[0]?.imageUrl) ||
+                         houseData.imageUrl ||
+                         ''
+      };
+      
+      console.log('Formatted house data:', formattedHouse);
+      setHouse(formattedHouse);
     } catch (error) {
       console.error('Failed to load house', error);
       toast.error('Failed to load house details');
