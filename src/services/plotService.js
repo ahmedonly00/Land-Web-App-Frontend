@@ -47,7 +47,7 @@ export const plotService = {
   getAllPlots: async (params = {}) => {
     try {
       console.log('Fetching plots with params:', params);
-      const response = await api.get('/plots', { 
+      const response = await api.get('/api/plots/getAllPlots', { 
         params: {
           page: params.page || 0,
           size: params.size || 12,
@@ -88,7 +88,7 @@ export const plotService = {
   
   getFeaturedPlots: async (limit = 6) => {
     try {
-      const response = await api.get(`/plots/getFeaturedPlots?limit=${limit}`);
+      const response = await api.get(`/api/plots/getFeaturedPlots?limit=${limit}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getFeaturedPlots');
@@ -97,7 +97,7 @@ export const plotService = {
   
   getPlotById: async (id) => {
     try {
-      const response = await api.get(`/plots/getPlotById/${id}`);
+      const response = await api.get(`/api/plots/getPlotById/${id}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getPlotById');
@@ -107,7 +107,7 @@ export const plotService = {
   // Admin endpoints
   adminGetAllPlots: async (params = {}) => {
     try {
-      const response = await api.get('/admin/plots/getAllPlots', { params });
+      const response = await api.get('/api/admin/plots/getAllPlots', { params });
       return response.data;
     } catch (error) {
       return handleApiError(error, 'adminGetAllPlots');
@@ -116,7 +116,7 @@ export const plotService = {
   
   adminGetPlotById: async (id) => {
     try {
-      const response = await api.get(`/admin/plots/getPlotById/${id}`);
+      const response = await api.get(`/api/admin/plots/getPlotById/${id}`);
       return response.data;
     } catch (error) {
       // If it's a 500 error with successful response data, return the data
@@ -130,7 +130,7 @@ export const plotService = {
   
   createPlot: async (plotData) => {
     try {
-      const response = await api.post('/admin/plots/createPlot', plotData);
+      const response = await api.post('/api/admin/plots/createPlot', plotData);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'createPlot');
@@ -139,7 +139,7 @@ export const plotService = {
   
   updatePlot: async (id, plotData) => {
     try {
-      const response = await api.put(`/admin/plots/updatePlot/${id}`, plotData);
+      const response = await api.put(`/api/admin/plots/updatePlot/${id}`, plotData);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'updatePlot');
@@ -148,7 +148,7 @@ export const plotService = {
   
   deletePlot: async (id) => {
     try {
-      const response = await api.delete(`/admin/plots/deletePlot/${id}`);
+      const response = await api.delete(`/api/admin/plots/deletePlot/${id}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'deletePlot');
@@ -157,7 +157,7 @@ export const plotService = {
   
   updatePlotStatus: async (id, status) => {
     try {
-      const response = await api.patch(`/admin/plots/updatePlotStatus/${id}`, { status });
+      const response = await api.patch(`/api/admin/plots/updatePlotStatus/${id}`, { status });
       return response.data;
     } catch (error) {
       return handleApiError(error, 'updatePlotStatus');
@@ -173,7 +173,7 @@ export const plotService = {
       uploadData.append('displayOrder', displayOrder);
       uploadData.append('isFeatured', isFeatured);
 
-      const response = await api.post(`/admin/plots/uploadImage/${plotId}`, uploadData, {
+      const response = await api.post(`/api/admin/plots/uploadImage/${plotId}`, uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -189,7 +189,7 @@ export const plotService = {
   
   uploadVideo: async (plotId, formData) => {
     try {
-      const response = await api.post(`/admin/plots/uploadVideo/${plotId}`, formData, {
+      const response = await api.post(`/api/admin/plots/uploadVideo/${plotId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -202,7 +202,7 @@ export const plotService = {
   
   deleteImage: async (imageId) => {
     try {
-      const response = await api.delete(`/admin/plots/deleteImage/${imageId}`);
+      const response = await api.delete(`/api/admin/plots/deleteImage/${imageId}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'deleteImage');
@@ -211,7 +211,7 @@ export const plotService = {
   
   reorderImages: async (plotId, imageIds) => {
     try {
-      const response = await api.put(`/admin/plots/reorderImages/${plotId}`, imageIds);
+      const response = await api.put(`/api/admin/plots/reorderImages/${plotId}`, imageIds);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'reorderImages');

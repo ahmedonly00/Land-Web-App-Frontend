@@ -7,9 +7,6 @@ export const authService = {
 
   login: async (credentials, passwordParam) => {
     try {
-      // Handle both calling styles:
-      // authService.login({ username, password }) OR
-      // authService.login(username, password)
       let username, password;
       
       if (typeof credentials === 'object' && credentials !== null) {

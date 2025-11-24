@@ -1,12 +1,12 @@
 import api from './api';
 
 export const contactService = {
-  submitInquiry: (inquiryData) => api.post('/contact/submitInquiry', inquiryData),
+  submitInquiry: (inquiryData) => api.post('/api/contact/submitInquiry', inquiryData),
   
   // Admin endpoints
   getInquiries: async (params = {}) => {
     try {
-      const response = await api.get('/admin/dashboard/inquiries', { params });
+      const response = await api.get('/api/admin/dashboard/inquiries', { params });
       console.log('getInquiries response:', response);
       
       // Handle different response formats

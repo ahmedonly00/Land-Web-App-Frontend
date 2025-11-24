@@ -1,11 +1,11 @@
 import api from './api';
 
 export const dashboardService = {
-  getStats: () => api.get('/admin/dashboard/stats'),
+  getStats: () => api.get('/api/admin/dashboard/stats'),
   
   getInquiries: async (params = {}) => {
     try {
-      const response = await api.get('/admin/dashboard/inquiries', { params });
+      const response = await api.get('/api/admin/dashboard/inquiries', { params });
       console.log('Dashboard service - raw response:', response);
       
       // Return the data in a consistent format

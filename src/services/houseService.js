@@ -47,7 +47,7 @@ const houseService = {
   getAllHouses: async (params = {}) => {
     try {
       console.log('Fetching houses with params:', params);
-      const response = await api.get('/houses/getAllHouses', { 
+      const response = await api.get('/api/houses/getAllHouses', { 
         params: {
           page: params.page || 0,
           size: params.size || 12,
@@ -100,7 +100,7 @@ const houseService = {
   
   getFeaturedHouses: async (limit = 6) => {
     try {
-      const response = await api.get(`/houses/getFeaturedHouses?limit=${limit}`);
+      const response = await api.get(`/api/houses/getFeaturedHouses?limit=${limit}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getFeaturedHouses');
@@ -109,7 +109,7 @@ const houseService = {
   
   getHouseById: async (id) => {
     try {
-      const response = await api.get(`/houses/getHouseById/${id}`);
+      const response = await api.get(`/api/houses/getHouseById/${id}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getHouseById');
@@ -119,7 +119,7 @@ const houseService = {
   // Admin endpoints
   adminGetAllHouses: async (params = {}) => {
     try {
-      const response = await api.get('/admin/houses/getAllHouses', { params });
+      const response = await api.get('/api/admin/houses/getAllHouses', { params });
       return response.data;
     } catch (error) {
       return handleApiError(error, 'adminGetAllHouses');
@@ -128,7 +128,7 @@ const houseService = {
   
   adminGetHouseById: async (id) => {
     try {
-      const response = await api.get(`/admin/houses/getHouseById/${id}`);
+      const response = await api.get(`/api/admin/houses/getHouseById/${id}`);
       return response.data;
     } catch (error) {
       // If it's a 500 error with successful response data, return the data
@@ -142,7 +142,7 @@ const houseService = {
   
   createHouse: async (houseData) => {
     try {
-      const response = await api.post('/admin/houses/createHouse', houseData);
+      const response = await api.post('/api/admin/houses/createHouse', houseData);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'createHouse');
@@ -151,7 +151,7 @@ const houseService = {
   
   updateHouse: async (id, houseData) => {
     try {
-      const response = await api.put(`/admin/houses/updateHouse/${id}`, houseData);
+      const response = await api.put('/api/admin/houses/updateHouse/${id}', houseData);
       return response.data;
     } catch (error) {
       if (error.response?.status === 400) {
@@ -166,7 +166,7 @@ const houseService = {
   
   deleteHouse: async (id) => {
     try {
-      const response = await api.delete(`/admin/houses/deleteHouse/${id}`);
+      const response = await api.delete(`/api/admin/houses/deleteHouse/${id}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'deleteHouse');
@@ -175,7 +175,7 @@ const houseService = {
   
   updateHouseStatus: async (id, status) => {
     try {
-      const response = await api.put(`/admin/houses/updateHouseStatus/${id}`, { status });
+      const response = await api.put(`/api/admin/houses/updateHouseStatus/${id}`, { status });
       return response.data;
     } catch (error) {
       return handleApiError(error, 'updateHouseStatus');
@@ -185,7 +185,7 @@ const houseService = {
   // Search houses with filters
   searchHouses: async (filters = {}) => {
     try {
-      const response = await api.get('/admin/houses/searchHouses', { params: filters });
+      const response = await api.get('/api/admin/houses/searchHouses', { params: filters });
       return response.data;
     } catch (error) {
       return handleApiError(error, 'searchHouses');
@@ -201,7 +201,7 @@ const houseService = {
       uploadData.append('displayOrder', displayOrder);
       uploadData.append('isFeatured', isFeatured);
 
-      const response = await api.post(`/admin/houses/uploadImage/${houseId}`, uploadData, {
+      const response = await api.post(`/api/admin/houses/uploadImage/${houseId}`, uploadData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -217,7 +217,7 @@ const houseService = {
   
   uploadVideo: async (houseId, formData) => {
     try {
-      const response = await api.post(`/admin/houses/uploadVideo/${houseId}`, formData, {
+      const response = await api.post(`/api/admin/houses/uploadVideo/${houseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -230,7 +230,7 @@ const houseService = {
   
   deleteImage: async (imageId) => {
     try {
-      const response = await api.delete(`/admin/houses/deleteImage/${imageId}`);
+      const response = await api.delete(`/api/admin/houses/deleteImage/${imageId}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'deleteImage');
@@ -239,7 +239,7 @@ const houseService = {
   
   reorderImages: async (houseId, imageIds) => {
     try {
-      const response = await api.put(`/houses/reorderImages/${houseId}`, imageIds);
+      const response = await api.put(`/api/houses/reorderImages/${houseId}`, imageIds);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'reorderImages');
@@ -249,7 +249,7 @@ const houseService = {
   
   getSimilarHouses: async (houseId) => {
     try {
-      const response = await api.get(`/houses/getSimilarHouses/${houseId}`);
+      const response = await api.get(`/api/houses/getSimilarHouses/${houseId}`);
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getSimilarHouses');
@@ -258,7 +258,7 @@ const houseService = {
   
   getHouseFeatures: async () => {
     try {
-      const response = await api.get('/houses/getHouseFeatures');
+      const response = await api.get('/api/houses/getHouseFeatures');
       return response.data;
     } catch (error) {
       return handleApiError(error, 'getHouseFeatures');
