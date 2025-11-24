@@ -121,8 +121,6 @@ const HouseDetail = () => {
 
   // Get images array or fallback to default placeholder
   const getImages = () => {
-    const images = [];
-    
     // Check for images array first
     if (house.images && house.images.length > 0) {
       return house.images.map(img => ({
@@ -165,57 +163,41 @@ const HouseDetail = () => {
             <div className="lg:col-span-2">
               {/* Images */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-                {images && images.length > 0 ? (
-                  <div className="relative">
-                    <img
-                      src={getImageUrl(images[selectedImage]?.imageUrl || house.featuredImageUrl || '/placeholder-house.jpg')}
-                      alt={house.title}
-                      className="w-full h-96 object-cover"
-                      onError={(e) => {
-                        console.error('Error loading main image:', e.target.src);
-                        e.target.src = '/placeholder-house.jpg';
-                      }}
-                    />
-                    {/* Image gallery thumbnails */}
-                    {images.length > 1 && (
-                      <div className="flex space-x-2 mt-2 overflow-x-auto p-2">
-                        {images.map((img, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setSelectedImage(index)}
-                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                              selectedImage === index ? 'border-primary-600' : 'border-gray-200'
-                            }`}
-                          >
-                            <img
-                              src={img.imageUrl}
-                              alt={`${house.title} - ${index + 1}`}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                console.error('Error loading thumbnail:', e.target.src);
-                                e.target.src = '/placeholder-house.jpg';
-                              }}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                <div className="relative h-96 bg-gray-200">
+                  <img
+                    src={getImageUrl(images[selectedImage]?.imageUrl)}
+                    alt={house.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = '/placeholder-house.jpg';
+                    }}
+                  />
+                  <div className="absolute top-4 right-4">
+                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeColor(house.status)}`}>
+                      {house.status}
+                    </span>
                   </div>
-                ) : images.length > 0 ? (
-                  <div className="relative">
-                    <img
-                      src={images[0].imageUrl}
-                      alt={house.title}
-                      className="w-full h-96 object-cover"
-                      onError={(e) => {
-                        console.error('Error loading featured image:', e.target.src);
-                        e.target.src = '/placeholder-house.jpg';
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
-                    <Home className="w-16 h-16 text-gray-400" />
+                </div>
+                {images.length > 1 && (
+                  <div className="p-4 flex gap-2 overflow-x-auto">
+                    {images.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImage(index)}
+                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                          selectedImage === index ? 'border-primary-600' : 'border-gray-200'
+                        }`}
+                      >
+                        <img
+                          src={getImageUrl(image.imageUrl)}
+                          alt={`${house.title} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-house.jpg';
+                          }}
+                        />
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
