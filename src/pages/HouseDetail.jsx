@@ -152,15 +152,8 @@ const HouseDetail = () => {
       }));
     } 
     
-    // Fallback to imageUrl for backward compatibility
-    if (house.imageUrl) {
-      return [{
-        imageUrl: getImageUrl(house.imageUrl)
-      }];
-    }
-    
-    // Default placeholder if no images found
-    return [{ imageUrl: '/placeholder-house.jpg' }];
+    // Return empty array to trigger the PlaceholderImage component
+    return [];
   };
 
   const images = getImages();
@@ -187,19 +180,29 @@ const HouseDetail = () => {
               {/* Images */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
                 <div className="relative h-96 bg-gray-200">
+                  {images[selectedImage]?.imageUrl ? (
                   <img
-                    src={getImageUrl(images[selectedImage]?.imageUrl)}
+                    src={getImageUrl(images[selectedImage].imageUrl)}
                     alt={house.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.src = '/placeholder-house.jpg';
+                      e.target.style.display = 'none';
+                      e.target.parentNode.querySelector('.placeholder-container')?.classList.remove('hidden');
                     }}
                   />
-                  <div className="absolute top-4 right-4">
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeColor(house.status)}`}>
-                      {house.status}
-                    </span>
+                ) : (
+                  <div className="w-full h-full">
+                    <PlaceholderImage text="House Image" className="w-full h-full" />
                   </div>
+                )}
+                <div className="placeholder-container hidden w-full h-full">
+                  <PlaceholderImage text="Image not available" className="w-full h-full" />
+                </div>
+                <div className="absolute top-4 right-4">
+                  <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeColor(house.status)}`}>
+                    {house.status}
+                  </span>
+                </div>
                 </div>
                 {images.length > 1 && (
                   <div className="p-4 flex gap-2 overflow-x-auto">
@@ -211,14 +214,24 @@ const HouseDetail = () => {
                           selectedImage === index ? 'border-primary-600' : 'border-gray-200'
                         }`}
                       >
-                        <img
-                          src={getImageUrl(image.imageUrl)}
-                          alt={`${house.title} ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = '/placeholder-house.jpg';
-                          }}
-                        />
+                        {image.imageUrl ? (
+                            <img
+                              src={getImageUrl(image.imageUrl)}
+                              alt={`${house.title} ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full">
+                              <PlaceholderImage text="Image" className="w-full h-full" />
+                            </div>
+                          )}
+                          <div className="hidden absolute inset-0">
+                            <PlaceholderImage text="Image not available" className="w-full h-full" />
+                          </div>
                       </button>
                     ))}
                   </div>
