@@ -27,27 +27,50 @@ const HouseDetail = () => {
   const loadHouse = async () => {
     try {
       const houseData = await houseService.getHouseById(id);
-      setHouse(houseData);
-
+      
+      // Process images to ensure they have the correct URL format
+      const processImages = (images) => {
+        if (!images || !Array.isArray(images)) return [];
+        return images.map(img => {
+          // Handle both string paths and image objects
+          const imagePath = typeof img === 'string' ? img : (img?.imageUrl || '');
+          return {
+            ...(typeof img === 'object' ? img : {}),
+            imageUrl: getImageUrl(imagePath)
+          };
+        });
+      };
+      
+      // Get the first image URL regardless of format
+      const getFirstImageUrl = (images) => {
+        if (!images || !images.length) return '';
+        const firstImg = images[0];
+        return typeof firstImg === 'string' ? firstImg : firstImg?.imageUrl || '';
+      };
+      
+      // Format the house data to ensure consistent image URL handling
+      const formattedHouse = {
+        ...houseData,
+        // Process images array if it exists
+        images: houseData.images ? processImages(houseData.images) : [],
+        // Ensure we have a featuredImageUrl for backward compatibility
+        featuredImageUrl: getImageUrl(
+          houseData.featuredImageUrl || 
+          getFirstImageUrl(houseData.images) ||
+          houseData.imageUrl ||
+          ''
+        )
+      };
+      
+      console.log('Formatted house data:', formattedHouse);
+      setHouse(formattedHouse);
     } catch (error) {
       console.error('Failed to load house', error);
       toast.error('Failed to load house details');
     } finally {
       setLoading(false);
-    }  
-      
-      // // Process images to ensure they have the correct URL format
-      // const processImages = (images) => {
-      //   if (!images || !Array.isArray(images)) return [];
-      //   return images.map(img => {
-      //     // Handle both string paths and image objects
-      //     const imagePath = typeof img === 'string' ? img : (img?.imageUrl || '');
-      //     return {
-      //       ...(typeof img === 'object' ? img : {}),
-      //       imageUrl: getImageUrl(imagePath)
-      //     };
-      //   });
-    };
+    }
+  };
       
       // // Get the first image URL regardless of format
       // const getFirstImageUrl = (images) => {
