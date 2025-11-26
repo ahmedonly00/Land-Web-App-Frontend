@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Building2, Maximize, DollarSign, ArrowLeft, Check, Bed, Bath, Calendar, Home } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUtils';
+import PlaceholderImage from '../components/ui/placeholder-image';
 import houseService from '../services/houseService';
 import { settingsService } from '../services/settingsService';
 import Header from '../components/layout/Header';
