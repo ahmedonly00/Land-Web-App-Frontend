@@ -1,0 +1,7 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- House shape -->
+  <rect width="32" height="32" rx="6" fill="#4F46E5"/>
+  <path d="M16 8L6 18H10V28H22V18H26L16 8Z" fill="white"/>
+  <!-- 250 Text -->
+  <text x="16" y="22" font-family="Arial, sans-serif" font-size="8" font-weight="bold" text-anchor="middle" fill="#4F46E5">250</text>
+</svg>
