@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LogOut, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import InquiriesList from '../../components/admin/InquiriesList';
 
 const AdminInquiries = () => {
   const { user, logout } = useAuth();
