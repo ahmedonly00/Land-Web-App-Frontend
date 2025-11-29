@@ -145,20 +145,30 @@ const HouseDetail = () => {
 
   // Get images array or fallback to default placeholder
   const getImages = () => {
-    // Check for images array first
-    if (house.images && house.images.length > 0) {
-      return house.images.map(img => ({
-        ...img,
-        imageUrl: getImageUrl(img.imageUrl)
-      }));
-    } 
+    // If we have a featured image but no images array, create an array with it
+    if (house.featuredImageUrl && (!house.images || house.images.length === 0)) {
+      return [{ imageUrl: house.featuredImageUrl }];
+    }
     
-    // Return empty array to trigger the PlaceholderImage component
+    // If we have an images array, process it
+    if (house.images && house.images.length > 0) {
+      return house.images.map(img => {
+        // Handle both string and object formats
+        const imageUrl = typeof img === 'string' ? img : (img?.imageUrl || img?.url || '');
+        return {
+          ...(typeof img === 'object' ? img : {}),
+          imageUrl: getImageUrl(imageUrl)
+        };
+      });
+    }
+    
+    // Return empty array if no images found
     return [];
   };
 
   const images = getImages();
-  console.log('House images:', images);
+  console.log('House data:', house);
+  console.log('Processed images:', images);
 
   return (
     <div className="min-h-screen flex flex-col">
