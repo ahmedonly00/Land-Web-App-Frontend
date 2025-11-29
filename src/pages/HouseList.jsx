@@ -34,25 +34,25 @@ const HouseList = () => {
   const loadHouses = async () => {
     setLoading(true);
     try {
-      const response = await houseService.getAllHouses({
+      // Prepare query parameters
+      const queryParams = {
         page,
         size: 12,
-        location: filters.location,
-        minPrice: filters.minPrice ? parseFloat(filters.minPrice) : undefined,
-        maxPrice: filters.maxPrice ? parseFloat(filters.maxPrice) : undefined,
-        bedrooms: filters.bedrooms ? parseInt(filters.bedrooms) : undefined,
         sortBy: filters.sortBy,
-        sortDir: filters.sortDir
-      });
+        sortDir: filters.sortDir,
+        ...(filters.location && { location: filters.location }),
+        ...(filters.minPrice && { minPrice: parseFloat(filters.minPrice) }),
+        ...(filters.maxPrice && { maxPrice: parseFloat(filters.maxPrice) }),
+        ...(filters.bedrooms && { bedrooms: parseInt(filters.bedrooms) }),
+        ...(filters.bathrooms && { bathrooms: parseInt(filters.bathrooms) }),
+      };
+
+      console.log('Fetching houses with params:', queryParams);
+      const response = await houseService.getAllHouses(queryParams);
       
-      console.log('Houses API Response:', response);
-      
-      // The service now returns the correct structure
       if (response && response.content) {
-        // Format the houses data to ensure consistent image URL handling
         const formattedHouses = response.content.map(house => ({
           ...house,
-          // If the API returns images as an array, use the first one as featured
           featuredImageUrl: house.featuredImageUrl || 
                           (house.images && house.images[0]?.imageUrl) || 
                           ''
@@ -82,8 +82,20 @@ const HouseList = () => {
   };
 
   const handleSearch = () => {
+    // Validate price range
+    if (filters.minPrice && filters.maxPrice && parseFloat(filters.minPrice) > parseFloat(filters.maxPrice)) {
+      toast.error('Minimum price cannot be greater than maximum price');
+      return;
+    }
+    
     setPage(0);
     loadHouses();
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const resetFilters = () => {
@@ -127,12 +139,19 @@ const HouseList = () => {
                 name="location"
                 value={filters.location}
                 onChange={handleFilterChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Search houses by location..."
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
             
             <div className="flex items-center gap-2">
+              <button
+                onClick={handleSearch}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Search
+              </button>
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
