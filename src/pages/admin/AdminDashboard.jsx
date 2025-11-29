@@ -148,6 +148,36 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Plots Revenue */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <MapPin className="h-6 w-6" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500">Plots Revenue</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      ${(stats.plotsRevenue || 0).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Houses Revenue */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-green-100 text-green-600">
+                    <Home className="h-6 w-6" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500">Houses Revenue</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      ${(stats.housesRevenue || 0).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Available Plots */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between mb-4">
