@@ -52,47 +52,24 @@ const InquiriesList = () => {
     }
   }, []);
 
-  const loadInquiries = useCallback(async (page = 1) => {
+  // Load all inquiries once on component mount
+  const loadInquiries = useCallback(async () => {
     try {
       setLoading(true);
       
-      // Prepare query params
-      const queryParams = {
-        page,
-        limit: pagination.limit,
-        search: searchQuery,
-        ...filters
-      };
-
-      // Convert date strings to ISO format if they exist
-      if (filters.dateFrom) {
-        queryParams.dateFrom = startOfDay(new Date(filters.dateFrom)).toISOString();
-      }
-      if (filters.dateTo) {
-        queryParams.dateTo = endOfDay(new Date(filters.dateTo)).toISOString();
-      }
-
-      const response = await dashboardService.getInquiries(queryParams);
+      // Get all inquiries without any filters
+      const response = await dashboardService.getInquiries({});
       
       // Handle different response formats
       let data = [];
-      let total = 0;
       
       if (Array.isArray(response)) {
         data = response;
-        total = response.length;
       } else if (response && typeof response === 'object') {
         data = response.data || response.inquiries || [];
-        total = response.total || response.totalCount || data.length;
       }
 
       setInquiries(data);
-      setPagination(prev => ({
-        ...prev,
-        page,
-        total,
-        totalPages: Math.ceil(total / pagination.limit) || 1
-      }));
       
     } catch (error) {
       console.error('Error loading inquiries:', error);
@@ -100,27 +77,97 @@ const InquiriesList = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, filters, pagination.limit]);
+  }, []);
+  
+  // Apply filters on the frontend
+  const filterInquiries = useCallback((inquiries) => {
+    return inquiries.filter(inquiry => {
+      // Search query filter
+      if (searchQuery) {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = 
+          (inquiry.name && inquiry.name.toLowerCase().includes(searchLower)) ||
+          (inquiry.email && inquiry.email.toLowerCase().includes(searchLower)) ||
+          (inquiry.phone && inquiry.phone.toLowerCase().includes(searchLower)) ||
+          (inquiry.message && inquiry.message.toLowerCase().includes(searchLower)) ||
+          (inquiry.property && inquiry.property.title && 
+           inquiry.property.title.toLowerCase().includes(searchLower));
+        
+        if (!matchesSearch) return false;
+      }
+      
+      // Status filter
+      if (filters.status && inquiry.status !== filters.status) {
+        return false;
+      }
+      
+      // Date range filter
+      if (filters.dateFrom || filters.dateTo) {
+        const inquiryDate = new Date(inquiry.createdAt);
+        
+        if (filters.dateFrom) {
+          const fromDate = startOfDay(new Date(filters.dateFrom));
+          if (inquiryDate < fromDate) return false;
+        }
+        
+        if (filters.dateTo) {
+          const toDate = endOfDay(new Date(filters.dateTo));
+          if (inquiryDate > toDate) return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [searchQuery, filters]);
+  
+  // Get filtered and paginated inquiries
+  const getFilteredAndPaginatedInquiries = useCallback(() => {
+    const filtered = filterInquiries(inquiries);
+    const startIndex = (pagination.page - 1) * pagination.limit;
+    const endIndex = startIndex + pagination.limit;
+    
+    return {
+      paginatedData: filtered.slice(startIndex, endIndex),
+      total: filtered.length,
+      totalPages: Math.ceil(filtered.length / pagination.limit) || 1
+    };
+  }, [inquiries, filterInquiries, pagination.page, pagination.limit]);
 
-  // Initial load and when dependencies change
+  // Initial load
   useEffect(() => {
     loadInquiryStats();
-    loadInquiries(1);
+    loadInquiries();
   }, [loadInquiryStats, loadInquiries]);
+  
+  // Get the current page data
+  const { paginatedData, total, totalPages } = getFilteredAndPaginatedInquiries();
 
   // Handle filter changes
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
+    // Reset to first page when filters change
+    setPagination(prev => ({
+      ...prev,
+      page: 1
+    }));
   };
 
   // Handle search
   const handleSearch = (query) => {
     setSearchQuery(query);
+    // Reset to first page when search changes
+    setPagination(prev => ({
+      ...prev,
+      page: 1
+    }));
   };
 
   // Handle page change
   const handlePageChange = (page) => {
-    loadInquiries(page);
+    setPagination(prev => ({
+      ...prev,
+      page
+    }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -263,12 +310,12 @@ const InquiriesList = () => {
       
       {/* Inquiries Table */}
       <div className="overflow-x-auto">
-        {loading && inquiries.length === 0 ? (
+        {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
             <p className="text-gray-600">Loading inquiries...</p>
           </div>
-        ) : inquiries.length === 0 ? (
+        ) : paginatedData.length === 0 ? (
           <div className="text-center py-12">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -329,7 +376,7 @@ const InquiriesList = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {inquiries.map((inquiry) => (
+                {paginatedData.map((inquiry) => (
                   <tr 
                     key={inquiry.id} 
                     className={`hover:bg-gray-50 cursor-pointer ${inquiry.status === 'new' ? 'bg-blue-50' : ''}`}
@@ -451,7 +498,7 @@ const InquiriesList = () => {
                     </td>  
                   </tr>
                 ))}
-                {inquiries.length === 0 && (
+                {paginatedData.length === 0 && (
                   <tr>
                     <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
                       No inquiries found
@@ -462,18 +509,17 @@ const InquiriesList = () => {
             </table>
             
             {/* Pagination */}
-            {pagination.totalPages > 1 && (
+            {totalPages > 1 && (
               <div className="px-6 py-4 border-t border-gray-200">
                 <Pagination
                   currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  totalItems={pagination.total}
+                  totalPages={totalPages}
+                  totalItems={total}
                   itemsPerPage={pagination.limit}
                   onPageChange={handlePageChange}
                 />
               </div>
             )}
-          </div>
           </div>
         )}
 

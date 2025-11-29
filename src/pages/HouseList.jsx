@@ -12,7 +12,8 @@ import HouseCard from '../components/house/HouseCard';
 const HouseList = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [houses, setHouses] = useState([]);
+  const [allHouses, setAllHouses] = useState([]);
+  const [filteredHouses, setFilteredHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -26,59 +27,144 @@ const HouseList = () => {
     sortBy: 'createdAt',
     sortDir: 'desc'
   });
+  
+  // Pagination settings
+  const itemsPerPage = 12;
 
+  // Load all houses on component mount
   useEffect(() => {
-    loadHouses();
-  }, [page, filters]);
+    loadAllHouses();
+  }, []);
 
-  const loadHouses = async () => {
+  // Apply filters and update pagination when filters or allHouses change
+  useEffect(() => {
+    applyFilters();
+  }, [filters, allHouses]);
+
+  // Load all houses once when component mounts
+  const loadAllHouses = async () => {
     setLoading(true);
     try {
-      // Prepare query parameters
-      const queryParams = {
-        page,
-        size: 12,
-        sortBy: filters.sortBy,
-        sortDir: filters.sortDir,
-        ...(filters.location && { location: filters.location }),
-        ...(filters.minPrice && { minPrice: parseFloat(filters.minPrice) }),
-        ...(filters.maxPrice && { maxPrice: parseFloat(filters.maxPrice) }),
-        ...(filters.bedrooms && { bedrooms: parseInt(filters.bedrooms) }),
-        ...(filters.bathrooms && { bathrooms: parseInt(filters.bathrooms) }),
-      };
-
-      console.log('Fetching houses with params:', queryParams);
-      const response = await houseService.getAllHouses(queryParams);
+      // Fetch all houses without any filters
+      const response = await houseService.getAllHouses({ size: 1000 }); // Fetch a large number of houses
       
+      let houses = [];
       if (response && response.content) {
-        const formattedHouses = response.content.map(house => ({
-          ...house,
-          featuredImageUrl: house.featuredImageUrl || 
-                          (house.images && house.images[0]?.imageUrl) || 
-                          ''
-        }));
-        
-        console.log('Formatted houses:', formattedHouses);
-        setHouses(formattedHouses);
-        setTotalPages(response.totalPages || 1);
-      } else {
-        console.error('Unexpected response format:', response);
-        setHouses([]);
-        setTotalPages(1);
+        houses = response.content;
+      } else if (Array.isArray(response)) {
+        houses = response;
+      } else if (response && response.data && Array.isArray(response.data)) {
+        houses = response.data;
       }
+      
+      // Format houses with default image if needed
+      const formattedHouses = houses.map(house => ({
+        ...house,
+        featuredImageUrl: house.featuredImageUrl || 
+                        (house.images && house.images[0]?.imageUrl) || 
+                        ''
+      }));
+      
+      setAllHouses(formattedHouses);
+      setFilteredHouses([...formattedHouses]);
+      updatePagination(formattedHouses);
+      
     } catch (error) {
       console.error('Failed to load houses:', error);
       toast.error('Failed to load houses');
-      setHouses([]);
-      setTotalPages(1);
+      setAllHouses([]);
+      setFilteredHouses([]);
     } finally {
       setLoading(false);
     }
   };
+  
+  // Apply filters to all houses
+  const applyFilters = () => {
+    if (allHouses.length === 0) return;
+    
+    const filtered = allHouses.filter(house => {
+      // Location filter
+      if (filters.location && !house.location?.toLowerCase().includes(filters.location.toLowerCase())) {
+        return false;
+      }
+      
+      // Price filters
+      if (filters.minPrice && house.price < parseFloat(filters.minPrice)) {
+        return false;
+      }
+      if (filters.maxPrice && house.price > parseFloat(filters.maxPrice)) {
+        return false;
+      }
+      
+      // Bedrooms filter
+      if (filters.bedrooms && house.bedrooms < parseInt(filters.bedrooms)) {
+        return false;
+      }
+      
+      // Bathrooms filter
+      if (filters.bathrooms && house.bathrooms < parseInt(filters.bathrooms)) {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      const dir = filters.sortDir === 'asc' ? 1 : -1;
+      
+      switch (filters.sortBy) {
+        case 'price':
+          return (a.price - b.price) * dir;
+        case 'bedrooms':
+          return (a.bedrooms - b.bedrooms) * dir;
+        case 'bathrooms':
+          return (a.bathrooms - b.bathrooms) * dir;
+        case 'createdAt':
+        default:
+          return (new Date(a.createdAt) - new Date(b.createdAt)) * dir;
+      }
+    });
+    
+    setFilteredHouses(sorted);
+    updatePagination(sorted);
+  };
+  
+  // Update pagination based on filtered results
+  const updatePagination = (houses) => {
+    const total = houses.length;
+    const newTotalPages = Math.ceil(total / itemsPerPage) || 1;
+    setTotalPages(newTotalPages);
+    
+    // Reset to first page if current page is out of bounds
+    if (page >= newTotalPages) {
+      setPage(0);
+    }
+  };
+  
+  // Get current page data
+  const getCurrentPageData = () => {
+    const startIndex = page * itemsPerPage;
+    return filteredHouses.slice(startIndex, startIndex + itemsPerPage);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters(prev => ({
+      ...prev,
+      [name]: value,
+      // Reset to first page when filters change
+      ...(name !== 'sortBy' && name !== 'sortDir' && { page: 0 })
+    }));
+    
+    // If changing sort, update immediately
+    if (name === 'sortBy' || name === 'sortDir') {
+      setFilters(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSearch = () => {
@@ -98,8 +184,10 @@ const HouseList = () => {
       return;
     }
     
+    // Reset to first page when searching
     setPage(0);
-    loadHouses();
+    
+    // Apply filters will be triggered by the useEffect
   };
 
   const handleKeyPress = (e) => {
@@ -119,6 +207,7 @@ const HouseList = () => {
       sortDir: 'desc'
     });
     setPage(0);
+    // No need to reload data, just reset filters and let the effect handle it
   };
 
   const handlePageChange = (newPage) => {
@@ -249,10 +338,10 @@ const HouseList = () => {
           <div className="flex justify-center items-center h-64">
             <Loading />
           </div>
-        ) : houses.length > 0 ? (
+        ) : filteredHouses.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {houses.map(house => (
+              {getCurrentPageData().map(house => (
                 <HouseCard key={house.id} house={house} />
               ))}
             </div>
