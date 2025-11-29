@@ -4,6 +4,7 @@ import { LayoutDashboard, MapPin, DollarSign, TrendingUp, Plus, LogOut, Home, Me
 import { dashboardService } from '../../services/dashboardService';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
+import api from '../../services/api';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -52,9 +53,13 @@ const AdminDashboard = () => {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       
-      // Clear any API authorization header
-      if (api && api.defaults && api.defaults.headers) {
-        delete api.defaults.headers.common['Authorization'];
+      // Clear any API authorization header if api is available
+      try {
+        if (api?.defaults?.headers?.common) {
+          delete api.defaults.headers.common['Authorization'];
+        }
+      } catch (error) {
+        console.warn('Could not clear API authorization header:', error);
       }
       
       // Update the auth context
