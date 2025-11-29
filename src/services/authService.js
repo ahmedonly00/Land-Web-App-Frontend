@@ -107,7 +107,7 @@ export const authService = {
   register: async (userData) => {
     try {
       console.log('📝 Attempting registration');
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post('/api/auth/register', userData);
       console.log('✅ Registration successful');
       return response.data;
     } catch (error) {
@@ -127,7 +127,7 @@ export const authService = {
       
       // Try to call the backend logout endpoint
       try {
-        await api.post('/auth/logout');
+        await api.post('/api/auth/logout');
         console.log('✅ Backend logout successful');
       } catch (apiError) {
         console.warn('⚠️ Backend logout failed, proceeding with client-side cleanup', apiError);
