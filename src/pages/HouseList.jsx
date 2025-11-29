@@ -82,8 +82,18 @@ const HouseList = () => {
   };
 
   const handleSearch = () => {
-    // Validate price range
-    if (filters.minPrice && filters.maxPrice && parseFloat(filters.minPrice) > parseFloat(filters.maxPrice)) {
+    // Convert to numbers for comparison
+    const minPrice = filters.minPrice ? Number(filters.minPrice) : null;
+    const maxPrice = filters.maxPrice ? Number(filters.maxPrice) : null;
+
+    // Validate that prices are valid numbers
+    if ((minPrice !== null && isNaN(minPrice)) || (maxPrice !== null && isNaN(maxPrice))) {
+      toast.error('Please enter valid price numbers');
+      return;
+    }
+
+    // Validate price range if both are provided
+    if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
       toast.error('Minimum price cannot be greater than maximum price');
       return;
     }
