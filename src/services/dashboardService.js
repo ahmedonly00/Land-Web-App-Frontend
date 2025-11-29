@@ -1,28 +1,122 @@
 import api from './api';
 
+const handleResponse = (response) => {
+  if (response.data && (Array.isArray(response.data) || typeof response.data === 'object')) {
+    return response.data;
+  }
+  return response.data || [];
+};
+
 export const dashboardService = {
+  // Dashboard stats
   getStats: () => api.get('/api/admin/dashboard/stats'),
   
+  // Get inquiries with pagination, search, and filters
   getInquiries: async (params = {}) => {
     try {
-      const response = await api.get('/api/admin/dashboard/inquiries', { params });
-      console.log('Dashboard service - raw response:', response);
+      const response = await api.get('/api/admin/inquiries', { 
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 10,
+          status: params.status || '',
+          search: params.search || '',
+          sortBy: params.sortBy || 'createdAt',
+          sortOrder: params.sortOrder || 'desc',
+          ...params
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       
-      // Return the data in a consistent format
-      return {
-        data: response?.data || {},
-        status: response?.status || 200,
-        statusText: response?.statusText || 'OK'
-      };
+      return handleResponse(response);
     } catch (error) {
       console.error('Error in dashboardService.getInquiries:', error);
-      // Return a consistent error format
-      return {
-        data: [],
-        status: error.response?.status || 500,
-        statusText: error.response?.statusText || 'Internal Server Error',
-        error: error.message
-      };
+      throw error;
     }
   },
+  
+  // Get single inquiry by ID
+  getInquiryById: async (id) => {
+    try {
+      const response = await api.get(`/api/admin/inquiries/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error in dashboardService.getInquiryById:', error);
+      throw error;
+    }
+  },
+  
+  // Update inquiry status
+  updateInquiryStatus: async (id, status) => {
+    try {
+      const response = await api.patch(
+        `/api/admin/inquiries/${id}/status`,
+        { status },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error in dashboardService.updateInquiryStatus:', error);
+      throw error;
+    }
+  },
+  
+  // Delete an inquiry
+  deleteInquiry: async (id) => {
+    try {
+      const response = await api.delete(`/api/admin/inquiries/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error in dashboardService.deleteInquiry:', error);
+      throw error;
+    }
+  },
+  
+  // Get inquiry statistics (counts by status)
+  getInquiryStats: async () => {
+    try {
+      const response = await api.get('/api/admin/inquiries/stats', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Error in dashboardService.getInquiryStats:', error);
+      throw error;
+    }
+  },
+  
+  // Export inquiries to CSV
+  exportInquiries: async (params = {}) => {
+    try {
+      const response = await api.get('/api/admin/inquiries/export', {
+        params,
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'text/csv'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error in dashboardService.exportInquiries:', error);
+      throw error;
+    }
+  }
 };
