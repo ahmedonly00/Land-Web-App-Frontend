@@ -218,9 +218,10 @@ const AdminDashboard = () => {
                     </div>
                   )}
                 </div>
-                </div>
+              </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between p-4">
                   <div>
                     <h3 className="font-medium text-gray-900">Customer Inquiries</h3>
                     <p className="text-sm text-gray-600 mt-1">
