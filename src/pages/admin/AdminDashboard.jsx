@@ -219,20 +219,6 @@ const AdminDashboard = () => {
                   )}
                 </div>
               </div>
-
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Customer Inquiries</h3>
-                  <p className="text-sm text-gray-600">
-                    {stats.totalInquiries} total inquiries received
-                    {stats.newInquiries > 0 && (
-                      <span className="ml-1 text-blue-600 font-medium">
-                        ({stats.newInquiries} new)
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Quick Actions */}
