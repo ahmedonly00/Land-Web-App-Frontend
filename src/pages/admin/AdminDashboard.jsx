@@ -148,6 +148,39 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Available Plots */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <MapPin className="text-blue-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-blue-600">{stats.availablePlots || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Available Plots</h3>
+              </div>
+
+              {/* Sold Plots */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <MapPin className="text-purple-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-purple-600">{stats.soldPlots || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Sold Plots</h3>
+              </div>
+
+              {/* Reserved Plots */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <MapPin className="text-yellow-600" size={24} />
+                  </div>
+                  <span className="text-3xl font-bold text-yellow-600">{stats.reservedPlots || 0}</span>
+                </div>
+                <h3 className="text-gray-600 font-medium">Reserved Plots</h3>
+              </div>
+
               {/* Available Houses */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between mb-4">
