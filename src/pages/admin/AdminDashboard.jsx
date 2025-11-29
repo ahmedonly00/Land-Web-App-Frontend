@@ -221,21 +221,101 @@ const AdminDashboard = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-center justify-between p-4">
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Customer Inquiries</h3>
+                  <p className="text-sm text-gray-600">
+                    {stats.totalInquiries} total inquiries received
+                    {stats.newInquiries > 0 && (
+                      <span className="ml-1 text-blue-600 font-medium">
+                        ({stats.newInquiries} new)
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Link
+                  to="/admin/plots/new"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <Plus className="text-primary-600" size={24} />
                   <div>
-                    <h3 className="font-medium text-gray-900">Customer Inquiries</h3>
+                    <h3 className="font-semibold text-gray-900">Add New Plot</h3>
+                    <p className="text-sm text-gray-600">Create a new plot listing</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/admin/plots"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <MapPin className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Manage Plots</h3>
+                    <p className="text-sm text-gray-600">View and edit all plots</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/admin/houses/new"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <Home className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Add New House</h3>
+                    <p className="text-sm text-gray-600">Create a new house listing</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/admin/houses"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <Home className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Manage Houses</h3>
+                    <p className="text-sm text-gray-600">View and edit all houses</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/admin/settings"
+                  className="flex items-center gap-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-600 hover:bg-primary-50 transition"
+                >
+                  <LayoutDashboard className="text-primary-600" size={24} />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Settings</h3>
+                    <p className="text-sm text-gray-600">Update company info</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* Overview Section */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Overview</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h3 className="font-medium text-gray-900">Plot Status Distribution</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {stats.totalInquiries} total inquiries received
-                      {stats.newInquiries > 0 && ` (${stats.newInquiries} new)`}
+                      {stats.availablePlots || 0} Available • {stats.soldPlots || 0} Sold • {stats.reservedPlots || 0} Reserved
                     </p>
                   </div>
-                  <Link 
-                    to="/admin/inquiries" 
-                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
-                    View All
-                  </Link>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h3 className="font-medium text-gray-900">House Status Distribution</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {stats.availableHouses || 0} Available • {stats.soldHouses || 0} Sold • {stats.pendingHouses || 0} Pending • {stats.rentedHouses || 0} Rented
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
