@@ -48,8 +48,27 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      // Clear all authentication data from localStorage
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      
+      // Clear any API authorization header
+      if (api && api.defaults && api.defaults.headers) {
+        delete api.defaults.headers.common['Authorization'];
+      }
+      
+      // Update the auth context
+      if (logout) {
+        await logout();
+      }
+      
+      // Show success message
       toast.success('Logged out successfully');
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1000);
     } catch (error) {
       console.error('Logout failed', error);
     }
